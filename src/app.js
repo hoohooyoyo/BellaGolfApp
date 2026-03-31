@@ -1,0 +1,785 @@
+const app = {
+    currentHole: 1,
+    data: {
+        holes: []
+    }
+};
+
+function initApp() {
+    initHolesData();
+    setupNavigation();
+    renderHoleTabs();
+    renderHoleDetail();
+    updateStats();
+}
+
+function initHolesData() {
+    const standardPars = [4, 4, 3, 4, 5, 3, 4, 4, 4, 5, 4, 4, 4, 3, 4, 3, 4, 5];
+
+    for (let i = 1; i <= 18; i++) {
+        app.data.holes.push({
+            number: i,
+            par: standardPars[i - 1],
+            score: 0,
+            shots: [],
+            putts: []
+        });
+    }
+}
+
+function setupNavigation() {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${btn.dataset.tab}-section`).classList.add('active');
+            
+            if (btn.dataset.tab === 'summary') {
+                updateStats();
+            }
+        });
+    });
+}
+
+function renderHoleTabs() {
+    const container = document.getElementById('hole-tabs');
+    container.innerHTML = '';
+    
+    for (let i = 1; i <= 18; i++) {
+        const btn = document.createElement('button');
+        btn.className = `hole-tab ${i === app.currentHole ? 'active' : ''}`;
+        btn.textContent = i;
+        btn.addEventListener('click', () => {
+            app.currentHole = i;
+            renderHoleTabs();
+            renderHoleDetail();
+        });
+        container.appendChild(btn);
+    }
+}
+
+function renderHoleDetail() {
+    const hole = app.data.holes[app.currentHole - 1];
+    const container = document.getElementById('hole-detail');
+
+    container.innerHTML = `
+        <div class="hole-header">
+            <div class="hole-title">第 ${hole.number} 号洞</div>
+            <div class="hole-score">
+                <div class="score-item">
+                    <label>标准杆</label>
+                    <input type="number" id="par-input" value="${hole.par}" min="3" max="5">
+                </div>
+                <div class="score-item">
+                    <label>成绩</label>
+                    <input type="number" id="score-input" value="${hole.score || ''}" min="1">
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <h3>挥杆 & 切杆</h3>
+            <div class="shot-grid" id="shots-grid">
+                ${hole.shots.length > 0 ? hole.shots.map((shot, idx) => renderShotCard(shot, idx)).join('') : '<p style="color: #999; padding: 10px;">暂无挥杆数据，请点击下方按钮添加</p>'}
+            </div>
+            <button class="add-btn" onclick="addShot()">+ 添加挥杆</button>
+        </div>
+
+        <div class="input-section">
+            <h3>推杆</h3>
+            <div class="putt-grid" id="putts-grid">
+                ${hole.putts.length > 0 ? hole.putts.map((putt, idx) => renderPuttCard(putt, idx)).join('') : '<p style="color: #999; padding: 10px;">暂无推杆数据，请点击下方按钮添加</p>'}
+            </div>
+            <button class="add-btn" onclick="addPutt()">+ 添加推杆</button>
+        </div>
+    `;
+
+    setupHoleInputs();
+}
+
+function renderShotCard(shot, index) {
+    return `
+        <div class="shot-card" data-shot-index="${index}">
+            <h4>第 ${index + 1} 杆
+                <button class="remove-btn" onclick="removeShot(${index})">删除</button>
+            </h4>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>球杆</label>
+                    <select class="shot-club">
+                        <option value="1号木" ${shot.club === '1号木' ? 'selected' : ''}>1号木</option>
+                        <option value="3号木" ${shot.club === '3号木' ? 'selected' : ''}>3号木</option>
+                        <option value="5号木" ${shot.club === '5号木' ? 'selected' : ''}>5号木</option>
+                        <option value="球道木" ${shot.club === '球道木' ? 'selected' : ''}>球道木</option>
+                        <option value="3铁" ${shot.club === '3铁' ? 'selected' : ''}>3铁</option>
+                        <option value="4铁" ${shot.club === '4铁' ? 'selected' : ''}>4铁</option>
+                        <option value="5铁" ${shot.club === '5铁' ? 'selected' : ''}>5铁</option>
+                        <option value="6铁" ${shot.club === '6铁' ? 'selected' : ''}>6铁</option>
+                        <option value="7铁" ${shot.club === '7铁' ? 'selected' : ''}>7铁</option>
+                        <option value="8铁" ${shot.club === '8铁' ? 'selected' : ''}>8铁</option>
+                        <option value="9铁" ${shot.club === '9铁' ? 'selected' : ''}>9铁</option>
+                        <option value="P杆" ${shot.club === 'P杆' ? 'selected' : ''}>P杆</option>
+                        <option value="A杆" ${shot.club === 'A杆' ? 'selected' : ''}>A杆</option>
+                        <option value="S杆" ${shot.club === 'S杆' ? 'selected' : ''}>S杆</option>
+                        <option value="推杆" ${shot.club === '推杆' ? 'selected' : ''}>推杆</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>距离 (yd)</label>
+                    <input type="number" class="shot-distance" value="${shot.distance || ''}" min="0">
+                </div>
+                <div class="input-group">
+                    <label>方向</label>
+                    <select class="shot-direction">
+                        <option value="直球" ${shot.direction === '直球' ? 'selected' : ''}>直球</option>
+                        <option value="偏左" ${shot.direction === '偏左' ? 'selected' : ''}>偏左</option>
+                        <option value="偏右" ${shot.direction === '偏右' ? 'selected' : ''}>偏右</option>
+                        <option value="左曲" ${shot.direction === '左曲' ? 'selected' : ''}>左曲</option>
+                        <option value="右曲" ${shot.direction === '右曲' ? 'selected' : ''}>右曲</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>球位</label>
+                    <select class="shot-lie">
+                        <option value="球道" ${shot.lie === '球道' ? 'selected' : ''}>球道</option>
+                        <option value="长草" ${shot.lie === '长草' ? 'selected' : ''}>长草</option>
+                        <option value="沙坑" ${shot.lie === '沙坑' ? 'selected' : ''}>沙坑</option>
+                        <option value="果岭边" ${shot.lie === '果岭边' ? 'selected' : ''}>果岭边</option>
+                        <option value="果岭" ${shot.lie === '果岭' ? 'selected' : ''}>果岭</option>
+                        <option value="树林" ${shot.lie === '树林' ? 'selected' : ''}>树林</option>
+                        <option value="水障碍" ${shot.lie === '水障碍' ? 'selected' : ''}>水障碍</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>是否直攻</label>
+                    <select class="shot-attack">
+                        <option value="直攻" ${shot.attack === '直攻' ? 'selected' : ''}>直攻</option>
+                        <option value="过渡" ${shot.attack === '过渡' ? 'selected' : ''}>过渡</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>罚杆数</label>
+                    <input type="number" class="shot-penalty" value="${shot.penalty || 0}" min="0">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderPuttCard(putt, index) {
+    return `
+        <div class="putt-card" data-putt-index="${index}">
+            <h4>第 ${index + 1} 推
+                <button class="remove-btn" onclick="removePutt(${index})">删除</button>
+            </h4>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>距离 (ft)</label>
+                    <input type="number" class="putt-distance" value="${putt.distance || ''}" min="0">
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function setupHoleInputs() {
+    const hole = app.data.holes[app.currentHole - 1];
+    
+    document.getElementById('par-input').addEventListener('change', (e) => {
+        hole.par = parseInt(e.target.value) || 4;
+        updateStats();
+    });
+    
+    document.getElementById('score-input').addEventListener('change', (e) => {
+        hole.score = parseInt(e.target.value) || hole.par;
+        updateStats();
+    });
+    
+    document.querySelectorAll('.shot-card').forEach((card, idx) => {
+        card.querySelector('.shot-club').addEventListener('change', (e) => {
+            hole.shots[idx].club = e.target.value;
+            updateStats();
+        });
+        card.querySelector('.shot-distance').addEventListener('change', (e) => {
+            hole.shots[idx].distance = parseInt(e.target.value) || 0;
+            updateStats();
+        });
+        card.querySelector('.shot-direction').addEventListener('change', (e) => {
+            hole.shots[idx].direction = e.target.value;
+            updateStats();
+        });
+        card.querySelector('.shot-lie').addEventListener('change', (e) => {
+            hole.shots[idx].lie = e.target.value;
+            updateStats();
+        });
+        card.querySelector('.shot-attack').addEventListener('change', (e) => {
+            hole.shots[idx].attack = e.target.value;
+            updateStats();
+        });
+        card.querySelector('.shot-penalty').addEventListener('change', (e) => {
+            hole.shots[idx].penalty = parseInt(e.target.value) || 0;
+            updateStats();
+        });
+    });
+    
+    document.querySelectorAll('.putt-card').forEach((card, idx) => {
+        card.querySelector('.putt-distance').addEventListener('change', (e) => {
+            hole.putts[idx].distance = parseInt(e.target.value) || 0;
+            updateStats();
+        });
+    });
+}
+
+function addShot() {
+    const hole = app.data.holes[app.currentHole - 1];
+    hole.shots.push({ club: '7铁', distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
+    renderHoleDetail();
+}
+
+function removeShot(index) {
+    const hole = app.data.holes[app.currentHole - 1];
+    hole.shots.splice(index, 1);
+    renderHoleDetail();
+}
+
+function addPutt() {
+    const hole = app.data.holes[app.currentHole - 1];
+    hole.putts.push({ distance: 0 });
+    renderHoleDetail();
+}
+
+function removePutt(index) {
+    const hole = app.data.holes[app.currentHole - 1];
+    hole.putts.splice(index, 1);
+    renderHoleDetail();
+}
+
+function updateStats() {
+    const stats = calculateStats();
+    
+    // 概况
+    const overviewGrid = document.getElementById('stats-overview');
+    overviewGrid.innerHTML = `
+        <div class="stat-card">
+            <h3>成绩</h3>
+            <div class="value">${stats.overview.score}</div>
+        </div>
+        <div class="stat-card">
+            <h3>推杆</h3>
+            <div class="value">${stats.overview.putts}</div>
+        </div>
+        <div class="stat-card">
+            <h3>罚杆</h3>
+            <div class="value">${stats.overview.penalties}</div>
+        </div>
+        <div class="stat-card">
+            <h3>标杆上果岭率</h3>
+            <div class="value">${formatPercent(stats.overview.girRate)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>一切一推率</h3>
+            <div class="value">${formatPercent(stats.overview.upDownRate)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>标上平均推杆</h3>
+            <div class="value">${stats.overview.avgPuttsGIR}</div>
+        </div>
+        <div class="stat-card">
+            <h3>平均开球距离</h3>
+            <div class="value">${stats.overview.avgDriveDist}<span class="unit">yd</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>最远开球距离</h3>
+            <div class="value">${stats.overview.maxDriveDist}<span class="unit">yd</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>开球上球道率</h3>
+            <div class="value">${formatPercent(stats.overview.fairwayRate)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>三杆洞平均成绩</h3>
+            <div class="value">${stats.overview.avgScorePar3}</div>
+        </div>
+        <div class="stat-card">
+            <h3>四杆洞平均成绩</h3>
+            <div class="value">${stats.overview.avgScorePar4}</div>
+        </div>
+        <div class="stat-card">
+            <h3>五杆洞平均成绩</h3>
+            <div class="value">${stats.overview.avgScorePar5}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Eagle</h3>
+            <div class="value">${stats.overview.eagles}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Birdies</h3>
+            <div class="value">${stats.overview.birdies}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Par</h3>
+            <div class="value">${stats.overview.pars}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Bogey</h3>
+            <div class="value">${stats.overview.bogeys}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Double Bogey</h3>
+            <div class="value">${stats.overview.doubleBogeys}</div>
+        </div>
+    `;
+    
+    // 开球
+    const drivingGrid = document.getElementById('stats-driving');
+    drivingGrid.innerHTML = `
+        <div class="stat-card">
+            <h3>开球球道</h3>
+            <div class="value">${formatPercent(stats.driving.fairway)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>开球长草</h3>
+            <div class="value">${formatPercent(stats.driving.rough)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>开球沙坑</h3>
+            <div class="value">${formatPercent(stats.driving.bunker)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>开球直球</h3>
+            <div class="value">${formatPercent(stats.driving.straight)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>开球偏左</h3>
+            <div class="value">${formatPercent(stats.driving.left)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>开球偏右</h3>
+            <div class="value">${formatPercent(stats.driving.right)}</div>
+        </div>
+    `;
+    
+    // 铁杆
+    const ironsGrid = document.getElementById('stats-irons');
+    ironsGrid.innerHTML = `
+        <div class="stat-card">
+            <h3>50-75上果岭率</h3>
+            <div class="value">${formatPercent(stats.irons.gir5075)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>75-100上果岭率</h3>
+            <div class="value">${formatPercent(stats.irons.gir75100)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>100-125上果岭率</h3>
+            <div class="value">${formatPercent(stats.irons.gir100125)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>125-150上果岭率</h3>
+            <div class="value">${formatPercent(stats.irons.gir125150)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>150-200上果岭率</h3>
+            <div class="value">${formatPercent(stats.irons.gir150200)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>200以上上果岭率</h3>
+            <div class="value">${formatPercent(stats.irons.gir200plus)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>50-75精准度</h3>
+            <div class="value">${stats.irons.acc5075}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>75-100精准度</h3>
+            <div class="value">${stats.irons.acc75100}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>100-125精准度</h3>
+            <div class="value">${stats.irons.acc100125}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>125-150精准度</h3>
+            <div class="value">${stats.irons.acc125150}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>150-200精准度</h3>
+            <div class="value">${stats.irons.acc150200}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>200以上精准度</h3>
+            <div class="value">${stats.irons.acc200plus}<span class="unit">ft</span></div>
+        </div>
+    `;
+    
+    // 切杆
+    const chippingGrid = document.getElementById('stats-chipping');
+    chippingGrid.innerHTML = `
+        <div class="stat-card">
+            <h3>0-10yd救球成功率</h3>
+            <div class="value">${formatPercent(stats.chipping.save010)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>10-20yd救球成功率</h3>
+            <div class="value">${formatPercent(stats.chipping.save1020)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>20-30yd救球成功率</h3>
+            <div class="value">${formatPercent(stats.chipping.save2030)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>30-40yd救球成功率</h3>
+            <div class="value">${formatPercent(stats.chipping.save3040)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>40-50yd救球成功率</h3>
+            <div class="value">${formatPercent(stats.chipping.save4050)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>0-10yd平均剩余</h3>
+            <div class="value">${stats.chipping.remain010}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>10-20yd平均剩余</h3>
+            <div class="value">${stats.chipping.remain1020}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>20-30yd平均剩余</h3>
+            <div class="value">${stats.chipping.remain2030}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>30-40yd平均剩余</h3>
+            <div class="value">${stats.chipping.remain3040}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>40-50yd平均剩余</h3>
+            <div class="value">${stats.chipping.remain4050}<span class="unit">ft</span></div>
+        </div>
+        <div class="stat-card">
+            <h3>沙坑救球平均剩余</h3>
+            <div class="value">${stats.chipping.bunkerRemain}<span class="unit">ft</span></div>
+        </div>
+    `;
+    
+    // 推杆
+    const puttingGrid = document.getElementById('stats-putting');
+    puttingGrid.innerHTML = `
+        <div class="stat-card">
+            <h3>一推率</h3>
+            <div class="value">${formatPercent(stats.putting.onePuttRate)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>三推数</h3>
+            <div class="value">${stats.putting.threePutts}</div>
+        </div>
+        <div class="stat-card">
+            <h3>0-3推进概率</h3>
+            <div class="value">${formatPercent(stats.putting.prob03)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>3-9推进概率</h3>
+            <div class="value">${formatPercent(stats.putting.prob39)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>9-15推进概率</h3>
+            <div class="value">${formatPercent(stats.putting.prob915)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>15-30推进概率</h3>
+            <div class="value">${formatPercent(stats.putting.prob1530)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>30以上推进概率</h3>
+            <div class="value">${formatPercent(stats.putting.prob30plus)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>9-15三推概率</h3>
+            <div class="value">${formatPercent(stats.putting.threePutt915)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>15-30三推概率</h3>
+            <div class="value">${formatPercent(stats.putting.threePutt1530)}</div>
+        </div>
+        <div class="stat-card">
+            <h3>30以上三推概率</h3>
+            <div class="value">${formatPercent(stats.putting.threePutt30plus)}</div>
+        </div>
+    `;
+}
+
+function formatPercent(value) {
+    if (value === '-' || isNaN(value)) return '-';
+    return (value * 100).toFixed(1) + '%';
+}
+
+function calculateStats() {
+    // 初始化统计数据
+    const stats = {
+        overview: {
+            score: 0,
+            putts: 0,
+            penalties: 0,
+            girRate: 0,
+            upDownRate: 0,
+            avgPuttsGIR: 0,
+            avgDriveDist: 0,
+            maxDriveDist: 0,
+            fairwayRate: 0,
+            avgScorePar3: 0,
+            avgScorePar4: 0,
+            avgScorePar5: 0,
+            eagles: 0,
+            birdies: 0,
+            pars: 0,
+            bogeys: 0,
+            doubleBogeys: 0
+        },
+        driving: {
+            fairway: 0,
+            rough: 0,
+            bunker: 0,
+            straight: 0,
+            left: 0,
+            right: 0
+        },
+        irons: {
+            gir5075: 0, gir75100: 0, gir100125: 0, gir125150: 0, gir150200: 0, gir200plus: 0,
+            acc5075: '-', acc75100: '-', acc100125: '-', acc125150: '-', acc150200: '-', acc200plus: '-'
+        },
+        chipping: {
+            save010: 0, save1020: 0, save2030: 0, save3040: 0, save4050: 0,
+            remain010: '-', remain1020: '-', remain2030: '-', remain3040: '-', remain4050: '-',
+            bunkerRemain: '-'
+        },
+        putting: {
+            onePuttRate: 0,
+            threePutts: 0,
+            prob03: 0, prob39: 0, prob915: 0, prob1530: 0, prob30plus: 0,
+            threePutt915: 0, threePutt1530: 0, threePutt30plus: 0
+        }
+    };
+
+    // 临时计数器
+    let driveDistances = [];
+    let driveCount = 0;
+    let fairwayCount = 0;
+    let roughCount = 0;
+    let bunkerCount = 0;
+    let straightCount = 0;
+    let leftCount = 0;
+    let rightCount = 0;
+    let par3Scores = [];
+    let par4Scores = [];
+    let par5Scores = [];
+    let girCount = 0;
+    let puttsGIR = 0;
+    let upDownAttempts = 0;
+    let upDownSuccess = 0;
+    
+    // 铁杆统计
+    let ironAttempts = { '50-75': 0, '75-100': 0, '100-125': 0, '125-150': 0, '150-200': 0, '200plus': 0 };
+    let ironGIR = { '50-75': 0, '75-100': 0, '100-125': 0, '125-150': 0, '150-200': 0, '200plus': 0 };
+    let ironAccuracy = { '50-75': [], '75-100': [], '100-125': [], '125-150': [], '150-200': [], '200plus': [] };
+    
+    // 切杆统计
+    let chipAttempts = { '0-10': 0, '10-20': 0, '20-30': 0, '30-40': 0, '40-50': 0 };
+    let chipSuccess = { '0-10': 0, '10-20': 0, '20-30': 0, '30-40': 0, '40-50': 0 };
+    let chipRemain = { '0-10': [], '10-20': [], '20-30': [], '30-40': [], '40-50': [] };
+    let bunkerRemain = [];
+    
+    // 推杆统计
+    let puttAttempts = { '0-3': 0, '3-9': 0, '9-15': 0, '15-30': 0, '30plus': 0 };
+    let puttSuccess = { '0-3': 0, '3-9': 0, '9-15': 0, '15-30': 0, '30plus': 0 };
+    let threePuttAttempts = { '9-15': 0, '15-30': 0, '30plus': 0 };
+    let threePuttCount = { '9-15': 0, '15-30': 0, '30plus': 0 };
+    let onePuttCount = 0;
+    let totalPuttsCount = 0;
+
+    app.data.holes.forEach(hole => {
+        // 概况统计
+        stats.overview.score += hole.score;
+        stats.overview.putts += hole.putts.length;
+        totalPuttsCount += hole.putts.length;
+        
+        // 推杆分析
+        if (hole.putts.length === 1) onePuttCount++;
+        if (hole.putts.length >= 3) stats.putting.threePutts++;
+        
+        hole.putts.forEach(putt => {
+            const dist = putt.distance || 0;
+            let range = '';
+            if (dist <= 3) range = '0-3';
+            else if (dist <= 9) range = '3-9';
+            else if (dist <= 15) range = '9-15';
+            else if (dist <= 30) range = '15-30';
+            else range = '30plus';
+            
+            puttAttempts[range]++;
+            if (hole.putts.indexOf(putt) === 0) {
+                puttSuccess[range]++;
+            }
+            
+            if (range !== '0-3' && range !== '3-9') {
+                threePuttAttempts[range]++;
+                if (hole.putts.length >= 3) {
+                    threePuttCount[range]++;
+                }
+            }
+        });
+        
+        // 成绩分类
+        if (hole.score <= hole.par - 2) stats.overview.eagles++;
+        else if (hole.score === hole.par - 1) stats.overview.birdies++;
+        else if (hole.score === hole.par) stats.overview.pars++;
+        else if (hole.score === hole.par + 1) stats.overview.bogeys++;
+        else stats.overview.doubleBogeys++;
+        
+        // 按标准杆分类
+        if (hole.par === 3) par3Scores.push(hole.score);
+        else if (hole.par === 4) par4Scores.push(hole.score);
+        else if (hole.par === 5) par5Scores.push(hole.score);
+        
+        // 挥杆统计
+        let holePenalties = 0;
+        let onGreen = false;
+        let lastShotDistance = 0;
+        
+        hole.shots.forEach((shot, idx) => {
+            holePenalties += shot.penalty || 0;
+            
+            // 开球统计
+            if (idx === 0 && (shot.club === '1号木' || shot.club === '3号木' || shot.club === '5号木')) {
+                driveCount++;
+                if (shot.distance) {
+                    driveDistances.push(shot.distance);
+                }
+                
+                if (shot.lie === '球道') { fairwayCount++; }
+                else if (shot.lie === '长草') { roughCount++; }
+                else if (shot.lie === '沙坑') { bunkerCount++; }
+                
+                if (shot.direction === '直球') { straightCount++; }
+                else if (shot.direction === '偏左' || shot.direction === '左曲') { leftCount++; }
+                else if (shot.direction === '偏右' || shot.direction === '右曲') { rightCount++; }
+            }
+            
+            // 铁杆统计（非开球且非推杆）
+            if (idx > 0 && shot.club !== '推杆' && shot.distance) {
+                const dist = shot.distance;
+                let range = '';
+                if (dist >= 50 && dist < 75) range = '50-75';
+                else if (dist >= 75 && dist < 100) range = '75-100';
+                else if (dist >= 100 && dist < 125) range = '100-125';
+                else if (dist >= 125 && dist < 150) range = '125-150';
+                else if (dist >= 150 && dist < 200) range = '150-200';
+                else if (dist >= 200) range = '200plus';
+                
+                if (range) {
+                    ironAttempts[range]++;
+                    // 简化：假设上果岭就是成功
+                    if (shot.lie === '果岭') {
+                        ironGIR[range]++;
+                    }
+                }
+            }
+            
+            // 切杆统计
+            if (shot.club !== '1号木' && shot.club !== '3号木' && shot.club !== '5号木' && 
+                shot.club !== '推杆' && shot.distance) {
+                const dist = shot.distance;
+                let range = '';
+                if (dist >= 0 && dist < 10) range = '0-10';
+                else if (dist >= 10 && dist < 20) range = '10-20';
+                else if (dist >= 20 && dist < 30) range = '20-30';
+                else if (dist >= 30 && dist < 40) range = '30-40';
+                else if (dist >= 40 && dist < 50) range = '40-50';
+                
+                if (range) {
+                    chipAttempts[range]++;
+                    // 简化：假设一切一推为成功救球
+                    if (hole.putts.length === 1) {
+                        chipSuccess[range]++;
+                    }
+                }
+            }
+            
+            // 沙坑救球
+            if (shot.lie === '沙坑' && shot.club !== '推杆') {
+                // 记录沙坑救球后的剩余距离
+                if (hole.putts.length > 0) {
+                    bunkerRemain.push(hole.putts[0].distance || 0);
+                }
+            }
+            
+            lastShotDistance = shot.distance || 0;
+        });
+        
+        stats.overview.penalties += holePenalties;
+        
+        // 标杆上果岭（简化计算）
+        if (hole.score - hole.putts.length <= hole.par - 2) {
+            girCount++;
+            puttsGIR += hole.putts.length;
+        }
+        
+        // 一切一推（简化：切杆后一推成功）
+        if (hole.shots.some(s => s.club !== '1号木' && s.club !== '推杆') && hole.putts.length === 1) {
+            upDownSuccess++;
+            upDownAttempts++;
+        } else if (hole.shots.some(s => s.lie === '果岭边' || s.lie === '沙坑')) {
+            upDownAttempts++;
+        }
+    });
+    
+    // 计算概况指标
+    stats.overview.girRate = girCount / 18;
+    stats.overview.upDownRate = upDownAttempts > 0 ? upDownSuccess / upDownAttempts : 0;
+    stats.overview.avgPuttsGIR = girCount > 0 ? (puttsGIR / girCount).toFixed(2) : '-';
+    stats.overview.avgDriveDist = driveCount > 0 ? Math.round(driveDistances.reduce((a, b) => a + b, 0) / driveCount) : 0;
+    stats.overview.maxDriveDist = driveDistances.length > 0 ? Math.max(...driveDistances) : 0;
+    stats.overview.fairwayRate = driveCount > 0 ? fairwayCount / driveCount : 0;
+    stats.overview.avgScorePar3 = par3Scores.length > 0 ? (par3Scores.reduce((a, b) => a + b, 0) / par3Scores.length).toFixed(2) : '-';
+    stats.overview.avgScorePar4 = par4Scores.length > 0 ? (par4Scores.reduce((a, b) => a + b, 0) / par4Scores.length).toFixed(2) : '-';
+    stats.overview.avgScorePar5 = par5Scores.length > 0 ? (par5Scores.reduce((a, b) => a + b, 0) / par5Scores.length).toFixed(2) : '-';
+    
+    // 计算开球指标
+    stats.driving.fairway = driveCount > 0 ? fairwayCount / driveCount : 0;
+    stats.driving.rough = driveCount > 0 ? roughCount / driveCount : 0;
+    stats.driving.bunker = driveCount > 0 ? bunkerCount / driveCount : 0;
+    stats.driving.straight = driveCount > 0 ? straightCount / driveCount : 0;
+    stats.driving.left = driveCount > 0 ? leftCount / driveCount : 0;
+    stats.driving.right = driveCount > 0 ? rightCount / driveCount : 0;
+    
+    // 计算铁杆指标
+    Object.keys(ironAttempts).forEach(range => {
+        const key = 'gir' + range.replace('-', '').replace('plus', 'plus');
+        stats.irons[key] = ironAttempts[range] > 0 ? ironGIR[range] / ironAttempts[range] : 0;
+    });
+    
+    // 计算切杆指标
+    Object.keys(chipAttempts).forEach(range => {
+        const key = 'save' + range.replace('-', '');
+        stats.chipping[key] = chipAttempts[range] > 0 ? chipSuccess[range] / chipAttempts[range] : 0;
+    });
+    
+    // 计算推杆指标
+    stats.putting.onePuttRate = totalPuttsCount > 0 ? onePuttCount / totalPuttsCount : 0;
+    
+    Object.keys(puttAttempts).forEach(range => {
+        const key = 'prob' + range.replace('-', '');
+        stats.putting[key] = puttAttempts[range] > 0 ? puttSuccess[range] / puttAttempts[range] : 0;
+    });
+    
+    Object.keys(threePuttAttempts).forEach(range => {
+        const key = 'threePutt' + range.replace('-', '');
+        stats.putting[key] = threePuttAttempts[range] > 0 ? threePuttCount[range] / threePuttAttempts[range] : 0;
+    });
+    
+    return stats;
+}
+
+document.addEventListener('DOMContentLoaded', initApp);

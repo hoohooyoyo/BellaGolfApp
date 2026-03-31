@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella Golf App - 高尔夫数据录入</title>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Bella Golf App</h1>
+            <nav>
+                <button class="nav-btn active" data-tab="summary">统计概览</button>
+                <button class="nav-btn" data-tab="holes">球洞录入</button>
+            </nav>
+        </header>
+        
+        <main>
+            <section id="summary-section" class="tab-content active">
+                <div class="stats-container">
+                    <!-- 概况 -->
+                    <div class="stats-category">
+                        <h3 class="category-title">概况</h3>
+                        <div class="stats-grid" id="stats-overview"></div>
+                    </div>
+                    
+                    <!-- 开球 -->
+                    <div class="stats-category">
+                        <h3 class="category-title">开球</h3>
+                        <div class="stats-grid" id="stats-driving"></div>
+                    </div>
+                    
+                    <!-- 铁杆 -->
+                    <div class="stats-category">
+                        <h3 class="category-title">铁杆</h3>
+                        <div class="stats-grid" id="stats-irons"></div>
+                    </div>
+                    
+                    <!-- 切杆 -->
+                    <div class="stats-category">
+                        <h3 class="category-title">切杆</h3>
+                        <div class="stats-grid" id="stats-chipping"></div>
+                    </div>
+                    
+                    <!-- 推杆 -->
+                    <div class="stats-category">
+                        <h3 class="category-title">推杆</h3>
+                        <div class="stats-grid" id="stats-putting"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="holes-section" class="tab-content">
+                <div class="hole-selector">
+                    <div class="hole-tabs" id="hole-tabs">
+                    </div>
+                </div>
+                <div class="hole-detail" id="hole-detail">
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2026 Bella Golf App</p>
+        </footer>
+    </div>
+    <script src="src/app.js"></script>
+</body>
+</html>
