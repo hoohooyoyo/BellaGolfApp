@@ -14,6 +14,13 @@ function initApp() {
     renderHoleTabs();
     renderHoleDetail();
     setupMatchInfoInputs();
+    
+    // 演示数据按钮事件
+    document.getElementById('demo-btn').addEventListener('click', loadDemoData);
+    
+    // 重置按钮事件
+    document.getElementById('reset-btn').addEventListener('click', resetData);
+    
     updateStats();
 }
 
@@ -35,32 +42,319 @@ function setupMatchInfoInputs() {
 }
 
 function initHolesData() {
-    // 初始化18个洞的空白数据
-    app.data.holes = [];
-    for (let i = 1; i <= 18; i++) {
-        app.data.holes.push({
-            number: i,
-            par: 4, // 默认标准杆4
-            score: '',
-            shots: [],
-            putts: [],
-            note: ''
-        });
-    }
+    // 按照标准设置每洞的标准杆数
+    // 前九洞 (Out)：2 个 Par 3，5 个 Par 4，2 个 Par 5 → 36 杆
+    // 后九洞 (In)：2 个 Par 3，5 个 Par 4，2 个 Par 5 → 36 杆
+    app.data.holes = [
+        { number: 1, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 2, par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 3, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 4, par: 5, score: '', shots: [], putts: [], note: '' },
+        { number: 5, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 6, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 7, par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 8, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 9, par: 5, score: '', shots: [], putts: [], note: '' },
+        { number: 10, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 11, par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 12, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 13, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 14, par: 5, score: '', shots: [], putts: [], note: '' },
+        { number: 15, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 16, par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 17, par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 18, par: 5, score: '', shots: [], putts: [], note: '' }
+    ];
+}
+
+function resetData() {
+    // 重置数据，保留标准杆
+    app.data.holes.forEach(hole => {
+        hole.score = '';
+        hole.shots = [];
+        hole.putts = [];
+        hole.note = '';
+    });
+    renderHoleDetail();
+    updateStats();
+}
+
+function loadDemoData() {
+    // 加载golf0611的击球数据作为演示数据
+    app.data.holes = [
+        { 
+            number: 1, 
+            par: 4, 
+            score: 4, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 2, 
+            par: 3, 
+            score: 3, 
+            shots: [
+                { club: '7铁', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 14 },
+                { distance: 1 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 3, 
+            par: 4, 
+            score: 5, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 15 },
+                { distance: 5 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 4, 
+            par: 5, 
+            score: 5, 
+            shots: [
+                { club: '1号木', distance: 210, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 180, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '8铁', distance: 120, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 5, 
+            par: 4, 
+            score: 3, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 5 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 6, 
+            par: 4, 
+            score: 4, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 7, 
+            par: 3, 
+            score: 2, 
+            shots: [
+                { club: '8铁', distance: 140, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 1 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 8, 
+            par: 4, 
+            score: 4, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 9, 
+            par: 5, 
+            score: 6, 
+            shots: [
+                { club: '1号木', distance: 215, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 175, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '9铁', distance: 110, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 15 },
+                { distance: 5 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 10, 
+            par: 4, 
+            score: 4, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 11, 
+            par: 3, 
+            score: 3, 
+            shots: [
+                { club: '7铁', distance: 145, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 8 },
+                { distance: 1 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 12, 
+            par: 4, 
+            score: 4, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 13, 
+            par: 4, 
+            score: 3, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 5 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 14, 
+            par: 5, 
+            score: 5, 
+            shots: [
+                { club: '1号木', distance: 210, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 180, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '8铁', distance: 115, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 15, 
+            par: 4, 
+            score: 4, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 16, 
+            par: 3, 
+            score: 3, 
+            shots: [
+                { club: '8铁', distance: 135, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 6 },
+                { distance: 1 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 17, 
+            par: 4, 
+            score: 5, 
+            shots: [
+                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 15 },
+                { distance: 5 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        },
+        { 
+            number: 18, 
+            par: 5, 
+            score: 5, 
+            shots: [
+                { club: '1号木', distance: 215, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 175, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '9铁', distance: 110, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+            ], 
+            putts: [
+                { distance: 10 },
+                { distance: 2 }
+            ], 
+            note: '' 
+        }
+    ];
+    renderHoleDetail();
+    updateStats();
 }
 
 function setupNavigation() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            document.getElementById(`${btn.dataset.tab}-section`).classList.add('active');
-            
-            if (btn.dataset.tab === 'summary') {
-                updateStats();
+            // 检查是否是导航按钮（有data-tab属性）
+            if (btn.dataset.tab) {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(`${btn.dataset.tab}-section`).classList.add('active');
+                
+                if (btn.dataset.tab === 'summary') {
+                    updateStats();
+                }
             }
+            // 演示数据和重置数据按钮会通过其他事件监听器处理
         });
     });
 }
@@ -249,6 +543,153 @@ function updateScoreDiff() {
     }
 }
 
+// 生成计分卡
+function generateScorecard() {
+    const holes = app.data.holes;
+    
+    // 计算out和in的par和score
+    let outPar = 0, inPar = 0, outScore = 0, inScore = 0;
+    for (let i = 0; i < 9; i++) {
+        outPar += holes[i].par;
+        outScore += holes[i].score || 0;
+    }
+    for (let i = 9; i < 18; i++) {
+        inPar += holes[i].par;
+        inScore += holes[i].score || 0;
+    }
+    const totalPar = outPar + inPar;
+    const totalScore = outScore + inScore;
+    
+    // 生成计分卡HTML
+    let html = `
+        <div class="scorecard">
+            <table class="scorecard-table">
+                <thead>
+                    <tr>
+                        <th>Hole</th>
+                        ${Array.from({length: 9}, (_, i) => `<th>${i+1}</th>`).join('')}
+                        <th class="total">OUT</th>
+                        ${Array.from({length: 9}, (_, i) => `<th>${i+10}</th>`).join('')}
+                        <th class="total">IN</th>
+                        <th class="total">TOT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Par -->
+                    <tr class="par-row">
+                        <td>Par</td>
+                        ${holes.slice(0, 9).map(hole => `<td>${hole.par}</td>`).join('')}
+                        <td class="total">${outPar}</td>
+                        ${holes.slice(9, 18).map(hole => `<td>${hole.par}</td>`).join('')}
+                        <td class="total">${inPar}</td>
+                        <td class="total">${totalPar}</td>
+                    </tr>
+                    <!-- Score -->
+                    <tr class="score-row">
+                        <td>Score</td>
+                        ${holes.slice(0, 9).map(hole => {
+                            const score = hole.score || '';
+                            const diff = score && hole.par ? score - hole.par : null;
+                            let className = '';
+                            if (diff === -2) className = 'eagle';
+                            else if (diff === -1) className = 'birdie';
+                            else if (diff === 0) className = 'par';
+                            else if (diff === 1) className = 'bogey';
+                            else if (diff === 2) className = 'double';
+                            else if (diff > 2) className = 'other';
+                            return `<td class="${className}">${score}</td>`;
+                        }).join('')}
+                        <td class="total">${outScore || ''}</td>
+                        ${holes.slice(9, 18).map(hole => {
+                            const score = hole.score || '';
+                            const diff = score && hole.par ? score - hole.par : null;
+                            let className = '';
+                            if (diff === -2) className = 'eagle';
+                            else if (diff === -1) className = 'birdie';
+                            else if (diff === 0) className = 'par';
+                            else if (diff === 1) className = 'bogey';
+                            else if (diff === 2) className = 'double';
+                            else if (diff > 2) className = 'other';
+                            return `<td class="${className}">${score}</td>`;
+                        }).join('')}
+                        <td class="total">${inScore || ''}</td>
+                        <td class="total">${totalScore || ''}</td>
+                    </tr>
+                    <!-- To Par -->
+                    <tr class="to-par-row">
+                        <td>To Par</td>
+                        ${holes.slice(0, 9).map(hole => {
+                            const score = hole.score || '';
+                            const diff = score && hole.par ? score - hole.par : null;
+                            let className = '';
+                            let display = '';
+                            if (diff === 0) {
+                                className = 'par';
+                                display = 'E';
+                            } else if (diff) {
+                                if (diff < 0) className = 'under-par';
+                                else className = 'over-par';
+                                display = diff > 0 ? `+${diff}` : diff;
+                            }
+                            return `<td class="${className}">${display}</td>`;
+                        }).join('')}
+                        <td class="total">${outScore - outPar === 0 ? 'E' : (outScore - outPar > 0 ? `+${outScore - outPar}` : (outScore - outPar || ''))}</td>
+                        ${holes.slice(9, 18).map(hole => {
+                            const score = hole.score || '';
+                            const diff = score && hole.par ? score - hole.par : null;
+                            let className = '';
+                            let display = '';
+                            if (diff === 0) {
+                                className = 'par';
+                                display = 'E';
+                            } else if (diff) {
+                                if (diff < 0) className = 'under-par';
+                                else className = 'over-par';
+                                display = diff > 0 ? `+${diff}` : diff;
+                            }
+                            return `<td class="${className}">${display}</td>`;
+                        }).join('')}
+                        <td class="total">${inScore - inPar === 0 ? 'E' : (inScore - inPar > 0 ? `+${inScore - inPar}` : (inScore - inPar || ''))}</td>
+                        <td class="total">${totalScore - totalPar === 0 ? 'E' : (totalScore - totalPar > 0 ? `+${totalScore - totalPar}` : (totalScore - totalPar || ''))}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- 颜色图例 -->
+            <div class="scorecard-legend">
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <span class="legend-color eagle"></span>
+                        <span>Eagles</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color birdie"></span>
+                        <span>Birdies</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color par"></span>
+                        <span>Pars</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color bogey"></span>
+                        <span>Bogeys</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color double"></span>
+                        <span>Doubles</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color other"></span>
+                        <span>Other</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return html;
+}
+
 function setupHoleInputs() {
     const hole = app.data.holes[app.currentHole - 1];
     
@@ -312,10 +753,27 @@ function setupHoleInputs() {
 
 function addShot() {
     const hole = app.data.holes[app.currentHole - 1];
-    hole.shots.push({ club: '56度', distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
+    const shotCount = hole.shots.length;
+    
+    // 根据标准杆和挥杆序号设置默认球杆
+    let defaultClub = '7铁'; // 默认7号铁
+    if (shotCount === 0) {
+        // 第一杆
+        if (hole.par === 3) {
+            defaultClub = '7铁'; // 标准杆3杆时第一杆默认7号铁
+        } else {
+            defaultClub = '1号木'; // 其他情况下第一杆默认1号木
+        }
+    } else if (shotCount === 1 && hole.par === 3) {
+        // 标准杆3杆时的第二杆
+        defaultClub = '56度'; // 第二杆默认56度切杆
+    }
+    
+    hole.shots.push({ club: defaultClub, distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
     // 更新成绩：挥杆数+推杆数
     hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
+    updateStats();
 }
 
 function removeShot(index) {
@@ -324,6 +782,7 @@ function removeShot(index) {
     // 更新成绩：挥杆数+推杆数
     hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
+    updateStats();
 }
 
 function addPutt() {
@@ -332,6 +791,7 @@ function addPutt() {
     // 更新成绩：挥杆数+推杆数
     hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
+    updateStats();
 }
 
 function removePutt(index) {
@@ -340,10 +800,15 @@ function removePutt(index) {
     // 更新成绩：挥杆数+推杆数
     hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
+    updateStats();
 }
 
 function updateStats() {
     const stats = calculateStats();
+    
+    // 积分卡
+    const scorecardGrid = document.getElementById('stats-scorecard');
+    scorecardGrid.innerHTML = generateScorecard();
     
     // 概况
     const overviewGrid = document.getElementById('stats-overview');

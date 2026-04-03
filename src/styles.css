@@ -74,6 +74,22 @@ header {
     border-color: #2d5a3d;
 }
 
+.reset-btn {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 10px 25px;
+    font-size: 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+.reset-btn:hover {
+    background: #c0c0c0;
+}
+
 nav {
     display: flex;
     gap: 10px;
@@ -251,10 +267,13 @@ h2 {
 .hole-score {
     display: flex;
     gap: 20px;
+    align-items: flex-start;
 }
 
 .score-item {
     text-align: center;
+    flex: 1;
+    min-width: 100px;
 }
 
 .score-item label {
@@ -565,4 +584,202 @@ footer {
 
 .voice-btn-edit:hover {
     background: #2980b9;
+}
+
+/* 计分卡样式 */
+.scorecard-container {
+    margin: 20px 0;
+}
+
+.scorecard {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 2px solid #1a472a;
+}
+
+.scorecard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.scorecard-table th,
+.scorecard-table td {
+    padding: 8px 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.scorecard-table th {
+    background: #1a472a;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .total {
+    background: #1a472a;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .par-row {
+    background: #e8f5e9;
+}
+
+.scorecard-table .score-row td.eagle {
+    background: #4caf50;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .score-row td.birdie {
+    background: #2196f3;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .score-row td.par {
+    background: #ffeb3b;
+    font-weight: 600;
+}
+
+.scorecard-table .score-row td.bogey {
+    background: #ff9800;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .score-row td.double {
+    background: #f44336;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .score-row td.other {
+    background: #9c27b0;
+    color: white;
+    font-weight: 600;
+}
+
+.scorecard-table .to-par-row td.under-par {
+    color: #4caf50;
+    font-weight: 600;
+}
+
+.scorecard-table .to-par-row td.over-par {
+    color: #f44336;
+    font-weight: 600;
+}
+
+.scorecard-table .to-par-row td.par {
+    color: #ff9800;
+    font-weight: 600;
+}
+
+/* 颜色图例 */
+.scorecard-legend {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #1a472a;
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+}
+
+.legend-color.eagle {
+    background: #4caf50;
+}
+
+.legend-color.birdie {
+    background: #2196f3;
+}
+
+.legend-color.par {
+    background: #ffeb3b;
+}
+
+.legend-color.bogey {
+    background: #ff9800;
+}
+
+.legend-color.double {
+    background: #f44336;
+}
+
+.legend-color.other {
+    background: #9c27b0;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    .scorecard-table {
+        font-size: 0.8rem;
+    }
+    
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 6px 8px;
+    }
+}
+
+@media (max-width: 768px) {
+    .scorecard {
+        padding: 10px;
+    }
+    
+    .scorecard-table {
+        font-size: 0.7rem;
+    }
+    
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 4px 6px;
+    }
+    
+    .legend-items {
+        gap: 10px;
+    }
+    
+    .legend-item {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .scorecard-table {
+        font-size: 0.6rem;
+    }
+    
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 3px 4px;
+    }
+    
+    .legend-items {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .legend-item {
+        font-size: 0.7rem;
+    }
 }
