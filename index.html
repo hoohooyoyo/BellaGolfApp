@@ -10,10 +10,28 @@
     <div id="app">
         <header>
             <h1>Bella Golf App</h1>
-            <nav>
-                <button class="nav-btn active" data-tab="summary">统计概览</button>
-                <button class="nav-btn" data-tab="holes">球洞录入</button>
-            </nav>
+            <div class="header-content">
+                <div class="match-info">
+                    <div class="info-row">
+                        <div class="info-item">
+                            <label>球员</label>
+                            <input type="text" id="player-input" placeholder="输入球员姓名">
+                        </div>
+                        <div class="info-item">
+                            <label>球场</label>
+                            <input type="text" id="course-input" placeholder="输入球场名称">
+                        </div>
+                        <div class="info-item">
+                            <label>日期</label>
+                            <input type="date" id="date-input">
+                        </div>
+                    </div>
+                </div>
+                <nav>
+                    <button class="nav-btn active" data-tab="summary">统计概览</button>
+                    <button class="nav-btn" data-tab="holes">成绩录入</button>
+                </nav>
+            </div>
         </header>
         
         <main>

@@ -1,6 +1,9 @@
 const app = {
     currentHole: 1,
     data: {
+        player: '',
+        course: '',
+        date: '',
         holes: []
     }
 };
@@ -10,21 +13,163 @@ function initApp() {
     setupNavigation();
     renderHoleTabs();
     renderHoleDetail();
+    setupMatchInfoInputs();
     updateStats();
 }
 
-function initHolesData() {
-    const standardPars = [4, 4, 3, 4, 5, 3, 4, 4, 4, 5, 4, 4, 4, 3, 4, 3, 4, 5];
+function setupMatchInfoInputs() {
+    // 球员输入
+    document.getElementById('player-input').addEventListener('input', (e) => {
+        app.data.player = e.target.value;
+    });
+    
+    // 球场输入
+    document.getElementById('course-input').addEventListener('input', (e) => {
+        app.data.course = e.target.value;
+    });
+    
+    // 日期输入
+    document.getElementById('date-input').addEventListener('input', (e) => {
+        app.data.date = e.target.value;
+    });
+}
 
-    for (let i = 1; i <= 18; i++) {
-        app.data.holes.push({
-            number: i,
-            par: standardPars[i - 1],
-            score: 0,
-            shots: [],
-            putts: []
-        });
-    }
+function initHolesData() {
+    // Golf 02 测试数据 - 使用实际击打距离（位置距离差值）
+    app.data.holes = [
+        { number: 1, par: 5, score: 5, shots: [
+            { club: '1号木', distance: 190, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '球道木', distance: 124, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 136, direction: '直球', lie: '沙坑', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 40, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 5 }
+        ]},
+        { number: 2, par: 3, score: 3, shots: [
+            { club: '7铁', distance: 116, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 14 },
+            { distance: 1 }
+        ]},
+        { number: 3, par: 3, score: 3, shots: [
+            { club: '7铁', distance: 136, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 18 },
+            { distance: 4 }
+        ]},
+        { number: 4, par: 4, score: 5, shots: [
+            { club: '1号木', distance: 185, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '球道木', distance: 165, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 20, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 12 },
+            { distance: 3 }
+        ]},
+        { number: 5, par: 4, score: 5, shots: [
+            { club: '1号木', distance: 194, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 147, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 13, direction: '直球', lie: '沙坑', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 36 },
+            { distance: 4 }
+        ]},
+        { number: 6, par: 4, score: 5, shots: [
+            { club: '1号木', distance: 170, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 145, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 35, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 21 },
+            { distance: 2 }
+        ]},
+        { number: 7, par: 3, score: 3, shots: [
+            { club: '7铁', distance: 151, direction: '偏右', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 48 },
+            { distance: 9 }
+        ]},
+        { number: 8, par: 4, score: 4, shots: [
+            { club: '1号木', distance: 169, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 151, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 21 },
+            { distance: 3 }
+        ]},
+        { number: 9, par: 5, score: 6, shots: [
+            { club: '1号木', distance: 197, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '球道木', distance: 197, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 93, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 39 },
+            { distance: 6 },
+            { distance: 1 }
+        ]},
+        { number: 10, par: 4, score: 4, shots: [
+            { club: '1号木', distance: 180, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '球道木', distance: 170, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 21 },
+            { distance: 2 }
+        ]},
+        { number: 11, par: 4, score: 5, shots: [
+            { club: '1号木', distance: 190, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 123, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 27, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 33 },
+            { distance: 4 }
+        ]},
+        { number: 12, par: 3, score: 4, shots: [
+            { club: '7铁', distance: 117, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 },
+            { club: '56度', distance: 19, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 9 },
+            { distance: 2 }
+        ]},
+        { number: 13, par: 4, score: 4, shots: [
+            { club: '1号木', distance: 178, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 104, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 16, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 1 }
+        ]},
+        { number: 14, par: 5, score: 5, shots: [
+            { club: '1号木', distance: 186, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '球道木', distance: 144, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 153, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 27 },
+            { distance: 4 }
+        ]},
+        { number: 15, par: 3, score: 3, shots: [
+            { club: '7铁', distance: 139, direction: '偏右', lie: '球道', attack: '直攻', penalty: 0 },
+            { club: '56度', distance: 17, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 2 }
+        ]},
+        { number: 16, par: 4, score: 4, shots: [
+            { club: '1号木', distance: 204, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 116, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '56度', distance: 10, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 5 }
+        ]},
+        { number: 17, par: 5, score: 5, shots: [
+            { club: '1号木', distance: 203, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '球道木', distance: 206, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 64, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
+        ], putts: [
+            { distance: 18 },
+            { distance: 2 }
+        ]},
+        { number: 18, par: 4, score: 5, shots: [
+            { club: '1号木', distance: 237, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
+            { club: '7铁', distance: 83, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
+        ], putts: [
+            { distance: 39 },
+            { distance: 9 },
+            { distance: 1 }
+        ]}
+    ];
 }
 
 function setupNavigation() {
@@ -94,6 +239,11 @@ function renderHoleDetail() {
             </div>
             <button class="add-btn" onclick="addPutt()">+ 添加推杆</button>
         </div>
+
+        <div class="input-section">
+            <h3>备注</h3>
+            <textarea class="note-input" id="note-input" placeholder="记录该洞的备注信息...">${hole.note || ''}</textarea>
+        </div>
     `;
 
     setupHoleInputs();
@@ -103,7 +253,8 @@ function renderShotCard(shot, index) {
     return `
         <div class="shot-card" data-shot-index="${index}">
             <h4>第 ${index + 1} 杆
-                <button class="remove-btn" onclick="removeShot(${index})">删除</button>
+                <button class="remove-btn" onclick="removeShot(${index})")">删除</button>
+                <button class="voice-btn" onclick="startVoiceRecognition(${index})")">🎤 语音</button>
             </h4>
             <div class="input-row">
                 <div class="input-group">
@@ -111,19 +262,14 @@ function renderShotCard(shot, index) {
                     <select class="shot-club">
                         <option value="1号木" ${shot.club === '1号木' ? 'selected' : ''}>1号木</option>
                         <option value="3号木" ${shot.club === '3号木' ? 'selected' : ''}>3号木</option>
-                        <option value="5号木" ${shot.club === '5号木' ? 'selected' : ''}>5号木</option>
                         <option value="球道木" ${shot.club === '球道木' ? 'selected' : ''}>球道木</option>
-                        <option value="3铁" ${shot.club === '3铁' ? 'selected' : ''}>3铁</option>
-                        <option value="4铁" ${shot.club === '4铁' ? 'selected' : ''}>4铁</option>
-                        <option value="5铁" ${shot.club === '5铁' ? 'selected' : ''}>5铁</option>
                         <option value="6铁" ${shot.club === '6铁' ? 'selected' : ''}>6铁</option>
                         <option value="7铁" ${shot.club === '7铁' ? 'selected' : ''}>7铁</option>
                         <option value="8铁" ${shot.club === '8铁' ? 'selected' : ''}>8铁</option>
                         <option value="9铁" ${shot.club === '9铁' ? 'selected' : ''}>9铁</option>
                         <option value="P杆" ${shot.club === 'P杆' ? 'selected' : ''}>P杆</option>
-                        <option value="A杆" ${shot.club === 'A杆' ? 'selected' : ''}>A杆</option>
-                        <option value="S杆" ${shot.club === 'S杆' ? 'selected' : ''}>S杆</option>
-                        <option value="推杆" ${shot.club === '推杆' ? 'selected' : ''}>推杆</option>
+                        <option value="52度" ${shot.club === '52度' ? 'selected' : ''}>52度</option>
+                        <option value="56度" ${shot.club === '56度' ? 'selected' : ''}>56度</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -232,11 +378,19 @@ function setupHoleInputs() {
             updateStats();
         });
     });
+
+    // 备注输入框
+    const noteInput = document.getElementById('note-input');
+    if (noteInput) {
+        noteInput.addEventListener('input', (e) => {
+            hole.note = e.target.value;
+        });
+    }
 }
 
 function addShot() {
     const hole = app.data.holes[app.currentHole - 1];
-    hole.shots.push({ club: '7铁', distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
+    hole.shots.push({ club: '56度', distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
     renderHoleDetail();
 }
 
@@ -609,27 +763,43 @@ function calculateStats() {
         if (hole.putts.length === 1) onePuttCount++;
         if (hole.putts.length >= 3) stats.putting.threePutts++;
         
-        hole.putts.forEach(putt => {
-            const dist = putt.distance || 0;
-            let range = '';
-            if (dist <= 3) range = '0-3';
-            else if (dist <= 9) range = '3-9';
-            else if (dist <= 15) range = '9-15';
-            else if (dist <= 30) range = '15-30';
-            else range = '30plus';
+        // 每个推杆都统计尝试次数，只有最后一推算成功
+        if (hole.putts.length > 0) {
+            hole.putts.forEach((putt, idx) => {
+                const dist = putt.distance || 0;
+                let range = '';
+                if (0 <= dist && dist <= 3) range = '0-3';
+                else if (3 < dist && dist <= 9) range = '3-9';
+                else if (9 < dist && dist <= 15) range = '9-15';
+                else if (15 < dist && dist <= 30) range = '15-30';
+                else if (dist > 30) range = '30plus';
+                
+                puttAttempts[range]++; // 每个推杆都计入尝试次数
+                
+                // 只有最后一推算成功
+                if (idx === hole.putts.length - 1) {
+                    puttSuccess[range]++;
+                }
+            });
             
-            puttAttempts[range]++;
-            if (hole.putts.indexOf(putt) === 0) {
-                puttSuccess[range]++;
-            }
+            // 第一推的距离用于三推统计
+            const firstPutt = hole.putts[0];
+            const firstDist = firstPutt.distance || 0;
+            let firstRange = '';
+            if (0 <= firstDist && firstDist <= 3) firstRange = '0-3';
+            else if (3 < firstDist && firstDist <= 9) firstRange = '3-9';
+            else if (9 < firstDist && firstDist <= 15) firstRange = '9-15';
+            else if (15 < firstDist && firstDist <= 30) firstRange = '15-30';
+            else if (firstDist > 30) firstRange = '30plus';
             
-            if (range !== '0-3' && range !== '3-9') {
-                threePuttAttempts[range]++;
+            // 统计9-15、15-30、30以上三个区间的三推率
+            if (['9-15', '15-30', '30plus'].includes(firstRange)) {
+                threePuttAttempts[firstRange]++;
                 if (hole.putts.length >= 3) {
-                    threePuttCount[range]++;
+                    threePuttCount[firstRange]++;
                 }
             }
-        });
+        }
         
         // 成绩分类
         if (hole.score <= hole.par - 2) stats.overview.eagles++;
@@ -645,78 +815,71 @@ function calculateStats() {
         
         // 挥杆统计
         let holePenalties = 0;
-        let onGreen = false;
-        let lastShotDistance = 0;
         
-        hole.shots.forEach((shot, idx) => {
+        for (let idx = 0; idx < hole.shots.length; idx++) {
+            const shot = hole.shots[idx];
             holePenalties += shot.penalty || 0;
             
             // 开球统计
-            if (idx === 0 && (shot.club === '1号木' || shot.club === '3号木' || shot.club === '5号木')) {
+            if (idx === 0 && ['1号木', '3号木', '5号木'].includes(shot.club)) {
                 driveCount++;
                 if (shot.distance) {
                     driveDistances.push(shot.distance);
                 }
                 
-                if (shot.lie === '球道') { fairwayCount++; }
-                else if (shot.lie === '长草') { roughCount++; }
-                else if (shot.lie === '沙坑') { bunkerCount++; }
+                if (shot.lie === '球道') fairwayCount++;
+                else if (shot.lie === '长草') roughCount++;
+                else if (shot.lie === '沙坑') bunkerCount++;
                 
-                if (shot.direction === '直球') { straightCount++; }
-                else if (shot.direction === '偏左' || shot.direction === '左曲') { leftCount++; }
-                else if (shot.direction === '偏右' || shot.direction === '右曲') { rightCount++; }
+                if (shot.direction === '直球') straightCount++;
+                else if (['偏左', '左曲'].includes(shot.direction)) leftCount++;
+                else if (['偏右', '右曲'].includes(shot.direction)) rightCount++;
             }
             
             // 铁杆统计（非开球且非推杆）
             if (idx > 0 && shot.club !== '推杆' && shot.distance) {
                 const dist = shot.distance;
-                let range = '';
-                if (dist >= 50 && dist < 75) range = '50-75';
-                else if (dist >= 75 && dist < 100) range = '75-100';
-                else if (dist >= 100 && dist < 125) range = '100-125';
-                else if (dist >= 125 && dist < 150) range = '125-150';
-                else if (dist >= 150 && dist < 200) range = '150-200';
-                else if (dist >= 200) range = '200plus';
+                let range_key = '';
+                if (50 <= dist && dist < 75) range_key = '50-75';
+                else if (75 <= dist && dist < 100) range_key = '75-100';
+                else if (100 <= dist && dist < 125) range_key = '100-125';
+                else if (125 <= dist && dist < 150) range_key = '125-150';
+                else if (150 <= dist && dist < 200) range_key = '150-200';
+                else if (dist >= 200) range_key = '200plus';
                 
-                if (range) {
-                    ironAttempts[range]++;
-                    // 简化：假设上果岭就是成功
+                if (range_key) {
+                    ironAttempts[range_key]++;
                     if (shot.lie === '果岭') {
-                        ironGIR[range]++;
+                        ironGIR[range_key]++;
                     }
                 }
             }
             
-            // 切杆统计
-            if (shot.club !== '1号木' && shot.club !== '3号木' && shot.club !== '5号木' && 
-                shot.club !== '推杆' && shot.distance) {
+            // 切杆统计 (52度和56度是切杆)
+            if (['52度', '56度'].includes(shot.club) && shot.distance) {
                 const dist = shot.distance;
-                let range = '';
-                if (dist >= 0 && dist < 10) range = '0-10';
-                else if (dist >= 10 && dist < 20) range = '10-20';
-                else if (dist >= 20 && dist < 30) range = '20-30';
-                else if (dist >= 30 && dist < 40) range = '30-40';
-                else if (dist >= 40 && dist < 50) range = '40-50';
+                let range_key = '';
+                if (0 <= dist && dist < 10) range_key = '0-10';
+                else if (10 <= dist && dist < 20) range_key = '10-20';
+                else if (20 <= dist && dist < 30) range_key = '20-30';
+                else if (30 <= dist && dist < 40) range_key = '30-40';
+                else if (40 <= dist && dist < 50) range_key = '40-50';
                 
-                if (range) {
-                    chipAttempts[range]++;
-                    // 简化：假设一切一推为成功救球
+                if (range_key) {
+                    chipAttempts[range_key]++;
                     if (hole.putts.length === 1) {
-                        chipSuccess[range]++;
+                        chipSuccess[range_key]++;
                     }
                 }
             }
             
             // 沙坑救球
             if (shot.lie === '沙坑' && shot.club !== '推杆') {
-                // 记录沙坑救球后的剩余距离
                 if (hole.putts.length > 0) {
                     bunkerRemain.push(hole.putts[0].distance || 0);
                 }
             }
-            
-            lastShotDistance = shot.distance || 0;
-        });
+        }
         
         stats.overview.penalties += holePenalties;
         
@@ -726,20 +889,18 @@ function calculateStats() {
             puttsGIR += hole.putts.length;
         }
         
-        // 一切一推（简化：切杆后一推成功）
-        if (hole.shots.some(s => s.club !== '1号木' && s.club !== '推杆') && hole.putts.length === 1) {
+        // 一切一推：只有1次切杆（52度或56度）且只有1次推杆
+        const chipShots = hole.shots.filter(s => ['52度', '56度'].includes(s.club));
+        if (chipShots.length === 1 && hole.putts.length === 1) {
             upDownSuccess++;
-            upDownAttempts++;
-        } else if (hole.shots.some(s => s.lie === '果岭边' || s.lie === '沙坑')) {
-            upDownAttempts++;
         }
     });
     
     // 计算概况指标
     stats.overview.girRate = girCount / 18;
-    stats.overview.upDownRate = upDownAttempts > 0 ? upDownSuccess / upDownAttempts : 0;
+    stats.overview.upDownRate = upDownSuccess / 18;
     stats.overview.avgPuttsGIR = girCount > 0 ? (puttsGIR / girCount).toFixed(2) : '-';
-    stats.overview.avgDriveDist = driveCount > 0 ? Math.round(driveDistances.reduce((a, b) => a + b, 0) / driveCount) : 0;
+    stats.overview.avgDriveDist = driveDistances.length > 0 ? Math.round(driveDistances.reduce((a, b) => a + b, 0) / driveDistances.length) : 0;
     stats.overview.maxDriveDist = driveDistances.length > 0 ? Math.max(...driveDistances) : 0;
     stats.overview.fairwayRate = driveCount > 0 ? fairwayCount / driveCount : 0;
     stats.overview.avgScorePar3 = par3Scores.length > 0 ? (par3Scores.reduce((a, b) => a + b, 0) / par3Scores.length).toFixed(2) : '-';
@@ -767,7 +928,7 @@ function calculateStats() {
     });
     
     // 计算推杆指标
-    stats.putting.onePuttRate = totalPuttsCount > 0 ? onePuttCount / totalPuttsCount : 0;
+    stats.putting.onePuttRate = totalPuttsCount > 0 ? onePuttCount / 18 : 0;
     
     Object.keys(puttAttempts).forEach(range => {
         const key = 'prob' + range.replace('-', '');
@@ -780,6 +941,370 @@ function calculateStats() {
     });
     
     return stats;
+}
+
+// 语音识别功能
+function startVoiceRecognition(shotIndex) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('您的浏览器不支持语音识别功能，请使用Chrome或Edge浏览器');
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'zh-CN';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    const hole = app.data.holes[app.currentHole - 1];
+    const shot = hole.shots[shotIndex];
+
+    // 显示录音状态
+    const voiceBtn = document.querySelector(`.shot-card[data-shot-index="${shotIndex}"] .voice-btn`);
+    if (voiceBtn) {
+        voiceBtn.textContent = '🎤 录音中...';
+        voiceBtn.style.background = '#e74c3c';
+    }
+
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        console.log('语音识别结果:', transcript);
+        
+        // 显示识别结果供用户确认
+        showVoiceConfirmDialog(transcript, shotIndex);
+        
+        // 恢复按钮状态
+        if (voiceBtn) {
+            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.style.background = '';
+        }
+    };
+
+    recognition.onerror = function(event) {
+        console.error('语音识别错误:', event.error);
+        if (voiceBtn) {
+            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.style.background = '';
+        }
+        
+        let errorMsg = '语音识别失败';
+        switch(event.error) {
+            case 'no-speech':
+                errorMsg = '没有检测到语音，请重试';
+                break;
+            case 'audio-capture':
+                errorMsg = '无法访问麦克风，请检查麦克风权限';
+                break;
+            case 'not-allowed':
+                errorMsg = '麦克风权限被拒绝，请在浏览器设置中允许访问麦克风';
+                break;
+            case 'network':
+                // 网络错误时，显示手动输入对话框
+                showManualVoiceInputDialog(shotIndex);
+                return;
+            case 'aborted':
+                errorMsg = '语音识别已取消';
+                break;
+            default:
+                errorMsg = '语音识别失败: ' + event.error;
+        }
+        alert(errorMsg);
+    };
+
+    recognition.onend = function() {
+        if (voiceBtn) {
+            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.style.background = '';
+        }
+    };
+
+    try {
+        recognition.start();
+    } catch (e) {
+        console.error('启动语音识别失败:', e);
+        if (voiceBtn) {
+            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.style.background = '';
+        }
+        showManualVoiceInputDialog(shotIndex);
+    }
+}
+
+// 显示语音识别确认对话框
+function showVoiceConfirmDialog(transcript, shotIndex) {
+    // 解析语音指令
+    const parsedData = parseVoiceCommandToData(transcript);
+    
+    const dialog = document.createElement('div');
+    dialog.className = 'voice-dialog';
+    dialog.innerHTML = `
+        <div class="voice-dialog-content">
+            <h3>语音识别结果</h3>
+            <p class="voice-text">识别内容: "${transcript}"</p>
+            <div class="voice-parsed">
+                <p><strong>解析结果:</strong></p>
+                <ul>
+                    <li>球杆: ${parsedData.club || '未识别'}</li>
+                    <li>距离: ${parsedData.distance ? parsedData.distance + '码' : '未识别'}</li>
+                    <li>方向: ${parsedData.direction || '未识别'}</li>
+                    <li>球位: ${parsedData.lie || '未识别'}</li>
+                    <li>攻击方式: ${parsedData.attack || '未识别'}</li>
+                    <li>罚杆: ${parsedData.penalty || '0'}</li>
+                </ul>
+            </div>
+            <div class="voice-dialog-buttons">
+                <button class="voice-btn-confirm" onclick="applyVoiceData(${shotIndex}, '${transcript.replace(/'/g, "\\'")}')">确认应用</button>
+                <button class="voice-btn-cancel" onclick="closeVoiceDialog()">取消</button>
+                <button class="voice-btn-edit" onclick="showManualVoiceInputDialog(${shotIndex}, '${transcript.replace(/'/g, "\\'")}')">手动编辑</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+}
+
+// 解析语音指令为数据对象
+function parseVoiceCommandToData(command) {
+    const data = {
+        club: '',
+        distance: 0,
+        direction: '',
+        lie: '',
+        attack: '',
+        penalty: 0
+    };
+    
+    // 球杆映射
+    const clubMap = {
+        '1号木': ['1号木', '一号木', '发球木'],
+        '3号木': ['3号木', '三号木'],
+        '球道木': ['球道木', '五号木', '5号木'],
+        '6铁': ['6铁', '六号铁'],
+        '7铁': ['7铁', '七号铁'],
+        '8铁': ['8铁', '八号铁'],
+        '9铁': ['9铁', '九号铁'],
+        'P杆': ['P杆', '劈起杆', '切杆'],
+        '52度': ['52度', '五十二度'],
+        '56度': ['56度', '五十六度']
+    };
+    
+    // 方向映射
+    const directionMap = {
+        '直球': ['直球', '直线'],
+        '偏左': ['偏左', '向左', '左边'],
+        '偏右': ['偏右', '向右', '右边'],
+        '左曲': ['左曲', '左勾', '左弯'],
+        '右曲': ['右曲', '右勾', '右弯']
+    };
+    
+    // 球位映射
+    const lieMap = {
+        '球道': ['球道', '球道上', '球道中'],
+        '长草': ['长草', '长草区', '粗草'],
+        '沙坑': ['沙坑', '沙池', '沙坑中'],
+        '果岭': ['果岭', '果岭上'],
+        '其他': ['其他', '树林', '障碍']
+    };
+    
+    // 攻击方式映射
+    const attackMap = {
+        '直攻': ['直攻', '直接攻击', '攻击'],
+        '过渡': ['过渡', '过渡球', '过渡攻击']
+    };
+    
+    // 解析球杆
+    for (const [club, keywords] of Object.entries(clubMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            data.club = club;
+            break;
+        }
+    }
+    
+    // 解析距离
+    const distanceMatch = command.match(/(\d+)码|(\d+)yard|(\d+)yd|距离(\d+)/);
+    if (distanceMatch) {
+        const distance = distanceMatch[1] || distanceMatch[2] || distanceMatch[3] || distanceMatch[4];
+        data.distance = parseInt(distance) || 0;
+    }
+    
+    // 解析方向
+    for (const [direction, keywords] of Object.entries(directionMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            data.direction = direction;
+            break;
+        }
+    }
+    
+    // 解析球位
+    for (const [lie, keywords] of Object.entries(lieMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            data.lie = lie;
+            break;
+        }
+    }
+    
+    // 解析攻击方式
+    for (const [attack, keywords] of Object.entries(attackMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            data.attack = attack;
+            break;
+        }
+    }
+    
+    // 解析 penalty
+    if (command.includes('罚杆') || command.includes(' penalty') || command.includes('加杆')) {
+        const penaltyMatch = command.match(/罚杆(\d+)|加杆(\d+)/);
+        if (penaltyMatch) {
+            data.penalty = parseInt(penaltyMatch[1] || penaltyMatch[2]) || 1;
+        } else {
+            data.penalty = 1;
+        }
+    }
+    
+    return data;
+}
+
+// 应用语音数据
+function applyVoiceData(shotIndex, transcript) {
+    const hole = app.data.holes[app.currentHole - 1];
+    const shot = hole.shots[shotIndex];
+    
+    parseVoiceCommand(transcript, shotIndex);
+    closeVoiceDialog();
+}
+
+// 关闭语音对话框
+function closeVoiceDialog() {
+    const dialog = document.querySelector('.voice-dialog');
+    if (dialog) {
+        dialog.remove();
+    }
+}
+
+// 显示手动输入对话框
+function showManualVoiceInputDialog(shotIndex, defaultText = '') {
+    closeVoiceDialog();
+    
+    const dialog = document.createElement('div');
+    dialog.className = 'voice-dialog';
+    dialog.innerHTML = `
+        <div class="voice-dialog-content">
+            <h3>手动输入语音内容</h3>
+            <p>请手动输入您要说的内容，格式示例：</p>
+            <p class="voice-example">"7铁 150码 直球 球道 直攻"</p>
+            <textarea class="voice-input-text" placeholder="输入语音内容...">${defaultText}</textarea>
+            <div class="voice-dialog-buttons">
+                <button class="voice-btn-confirm" onclick="parseManualVoiceInput(${shotIndex})">解析</button>
+                <button class="voice-btn-cancel" onclick="closeVoiceDialog()">取消</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(dialog);
+}
+
+// 解析手动输入
+function parseManualVoiceInput(shotIndex) {
+    const input = document.querySelector('.voice-input-text');
+    if (input && input.value.trim()) {
+        showVoiceConfirmDialog(input.value.trim(), shotIndex);
+    }
+}
+
+function parseVoiceCommand(command, shotIndex) {
+    const hole = app.data.holes[app.currentHole - 1];
+    const shot = hole.shots[shotIndex];
+    
+    // 球杆映射
+    const clubMap = {
+        '1号木': ['1号木', '一号木', '发球木'],
+        '3号木': ['3号木', '三号木'],
+        '球道木': ['球道木', '五号木', '5号木'],
+        '6铁': ['6铁', '六号铁'],
+        '7铁': ['7铁', '七号铁'],
+        '8铁': ['8铁', '八号铁'],
+        '9铁': ['9铁', '九号铁'],
+        'P杆': ['P杆', '劈起杆', '切杆'],
+        '52度': ['52度', '五十二度'],
+        '56度': ['56度', '五十六度']
+    };
+    
+    // 方向映射
+    const directionMap = {
+        '直球': ['直球', '直线'],
+        '偏左': ['偏左', '向左', '左边'],
+        '偏右': ['偏右', '向右', '右边'],
+        '左曲': ['左曲', '左勾', '左弯'],
+        '右曲': ['右曲', '右勾', '右弯']
+    };
+    
+    // 球位映射
+    const lieMap = {
+        '球道': ['球道', '球道上', '球道中'],
+        '长草': ['长草', '长草区', '粗草'],
+        '沙坑': ['沙坑', '沙池', '沙坑中'],
+        '果岭': ['果岭', '果岭上'],
+        '其他': ['其他', '树林', '障碍']
+    };
+    
+    // 攻击方式映射
+    const attackMap = {
+        '直攻': ['直攻', '直接攻击', '攻击'],
+        '过渡': ['过渡', '过渡球', '过渡攻击']
+    };
+    
+    // 解析球杆
+    for (const [club, keywords] of Object.entries(clubMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            shot.club = club;
+            break;
+        }
+    }
+    
+    // 解析距离
+    const distanceMatch = command.match(/(\d+)码|(\d+)yard|(\d+)yd|距离(\d+)/);
+    if (distanceMatch) {
+        const distance = distanceMatch[1] || distanceMatch[2] || distanceMatch[3] || distanceMatch[4];
+        shot.distance = parseInt(distance) || 0;
+    }
+    
+    // 解析方向
+    for (const [direction, keywords] of Object.entries(directionMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            shot.direction = direction;
+            break;
+        }
+    }
+    
+    // 解析球位
+    for (const [lie, keywords] of Object.entries(lieMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            shot.lie = lie;
+            break;
+        }
+    }
+    
+    // 解析攻击方式
+    for (const [attack, keywords] of Object.entries(attackMap)) {
+        if (keywords.some(keyword => command.includes(keyword))) {
+            shot.attack = attack;
+            break;
+        }
+    }
+    
+    // 解析 penalty
+    if (command.includes('罚杆') || command.includes(' penalty') || command.includes('加杆')) {
+        const penaltyMatch = command.match(/罚杆(\d+)|加杆(\d+)/);
+        if (penaltyMatch) {
+            shot.penalty = parseInt(penaltyMatch[1] || penaltyMatch[2]) || 1;
+        } else {
+            shot.penalty = 1;
+        }
+    }
+    
+    // 重新渲染
+    renderHoleDetail();
+    updateStats();
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
