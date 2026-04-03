@@ -563,97 +563,123 @@ function generateScorecard() {
     // 生成计分卡HTML
     let html = `
         <div class="scorecard">
-            <table class="scorecard-table">
-                <thead>
-                    <tr>
-                        <th>Hole</th>
-                        ${Array.from({length: 9}, (_, i) => `<th>${i+1}</th>`).join('')}
-                        <th class="total">OUT</th>
-                        ${Array.from({length: 9}, (_, i) => `<th>${i+10}</th>`).join('')}
-                        <th class="total">IN</th>
-                        <th class="total">TOT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Par -->
-                    <tr class="par-row">
-                        <td>Par</td>
-                        ${holes.slice(0, 9).map(hole => `<td>${hole.par}</td>`).join('')}
-                        <td class="total">${outPar}</td>
-                        ${holes.slice(9, 18).map(hole => `<td>${hole.par}</td>`).join('')}
-                        <td class="total">${inPar}</td>
-                        <td class="total">${totalPar}</td>
-                    </tr>
-                    <!-- Score -->
-                    <tr class="score-row">
-                        <td>Score</td>
-                        ${holes.slice(0, 9).map(hole => {
-                            const score = hole.score || '';
-                            const diff = score && hole.par ? score - hole.par : null;
-                            let className = '';
-                            if (diff === -2) className = 'eagle';
-                            else if (diff === -1) className = 'birdie';
-                            else if (diff === 0) className = 'par';
-                            else if (diff === 1) className = 'bogey';
-                            else if (diff === 2) className = 'double';
-                            else if (diff > 2) className = 'other';
-                            return `<td class="${className}">${score}</td>`;
-                        }).join('')}
-                        <td class="total">${outScore}</td>
-                        ${holes.slice(9, 18).map(hole => {
-                            const score = hole.score || '';
-                            const diff = score && hole.par ? score - hole.par : null;
-                            let className = '';
-                            if (diff === -2) className = 'eagle';
-                            else if (diff === -1) className = 'birdie';
-                            else if (diff === 0) className = 'par';
-                            else if (diff === 1) className = 'bogey';
-                            else if (diff === 2) className = 'double';
-                            else if (diff > 2) className = 'other';
-                            return `<td class="${className}">${score}</td>`;
-                        }).join('')}
-                        <td class="total">${inScore}</td>
-                        <td class="total">${totalScore}</td>
-                    </tr>
-                    <!-- To Par -->
-                    <tr class="to-par-row">
-                        <td>To Par</td>
-                        ${holes.slice(0, 9).map(hole => {
-                            const score = hole.score || '';
-                            const diff = score && hole.par ? score - hole.par : null;
-                            let className = '';
-                            let display = '';
-                            if (diff === 0) {
-                                className = 'par';
-                                display = 'E';
-                            } else if (diff) {
-                                if (diff < 0) className = 'under-par';
-                                else className = 'over-par';
-                                display = diff > 0 ? `+${diff}` : diff;
-                            }
-                            return `<td class="${className}">${display}</td>`;
-                        }).join('')}
-                        <td class="total">${outScore - outPar === 0 ? 'E' : (outScore - outPar > 0 ? `+${outScore - outPar}` : (outScore - outPar))}</td>
-                        ${holes.slice(9, 18).map(hole => {
-                            const score = hole.score || '';
-                            const diff = score && hole.par ? score - hole.par : null;
-                            let className = '';
-                            let display = '';
-                            if (diff === 0) {
-                                className = 'par';
-                                display = 'E';
-                            } else if (diff) {
-                                if (diff < 0) className = 'under-par';
-                                else className = 'over-par';
-                                display = diff > 0 ? `+${diff}` : diff;
-                            }
-                            return `<td class="${className}">${display}</td>`;
-                        }).join('')}
-                        <td class="total">${inScore - inPar === 0 ? 'E' : (inScore - inPar > 0 ? `+${inScore - inPar}` : (inScore - inPar))}</td>
-                        <td class="total">${totalScore - totalPar === 0 ? 'E' : (totalScore - totalPar > 0 ? `+${totalScore - totalPar}` : (totalScore - totalPar))}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="scorecard-top">
+                <table class="scorecard-table scorecard-out">
+                    <thead>
+                        <tr>
+                            <th>Hole</th>
+                            ${Array.from({length: 9}, (_, i) => `<th>${i+1}</th>`).join('')}
+                            <th class="total">OUT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Par -->
+                        <tr class="par-row">
+                            <td>Par</td>
+                            ${holes.slice(0, 9).map(hole => `<td>${hole.par}</td>`).join('')}
+                            <td class="total">${outPar}</td>
+                        </tr>
+                        <!-- Score -->
+                        <tr class="score-row">
+                            <td>Score</td>
+                            ${holes.slice(0, 9).map(hole => {
+                                const score = hole.score || '';
+                                const diff = score && hole.par ? score - hole.par : null;
+                                let className = '';
+                                if (diff === -2) className = 'eagle';
+                                else if (diff === -1) className = 'birdie';
+                                else if (diff === 0) className = 'par';
+                                else if (diff === 1) className = 'bogey';
+                                else if (diff === 2) className = 'double';
+                                else if (diff > 2) className = 'other';
+                                return `<td class="${className}">${score}</td>`;
+                            }).join('')}
+                            <td class="total">${outScore}</td>
+                        </tr>
+                        <!-- To Par -->
+                        <tr class="to-par-row">
+                            <td>To Par</td>
+                            ${holes.slice(0, 9).map(hole => {
+                                const score = hole.score || '';
+                                const diff = score && hole.par ? score - hole.par : null;
+                                let className = '';
+                                let display = '';
+                                if (diff === 0) {
+                                    className = 'par';
+                                    display = 'E';
+                                } else if (diff) {
+                                    if (diff < 0) className = 'under-par';
+                                    else className = 'over-par';
+                                    display = diff > 0 ? `+${diff}` : diff;
+                                }
+                                return `<td class="${className}">${display}</td>`;
+                            }).join('')}
+                            <td class="total">${outScore - outPar === 0 ? 'E' : (outScore - outPar > 0 ? `+${outScore - outPar}` : (outScore - outPar))}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="scorecard-bottom">
+                <table class="scorecard-table scorecard-in">
+                    <thead>
+                        <tr>
+                            <th>Hole</th>
+                            ${Array.from({length: 9}, (_, i) => `<th>${i+10}</th>`).join('')}
+                            <th class="total">IN</th>
+                            <th class="total">TOT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Par -->
+                        <tr class="par-row">
+                            <td>Par</td>
+                            ${holes.slice(9, 18).map(hole => `<td>${hole.par}</td>`).join('')}
+                            <td class="total">${inPar}</td>
+                            <td class="total">${totalPar}</td>
+                        </tr>
+                        <!-- Score -->
+                        <tr class="score-row">
+                            <td>Score</td>
+                            ${holes.slice(9, 18).map(hole => {
+                                const score = hole.score || '';
+                                const diff = score && hole.par ? score - hole.par : null;
+                                let className = '';
+                                if (diff === -2) className = 'eagle';
+                                else if (diff === -1) className = 'birdie';
+                                else if (diff === 0) className = 'par';
+                                else if (diff === 1) className = 'bogey';
+                                else if (diff === 2) className = 'double';
+                                else if (diff > 2) className = 'other';
+                                return `<td class="${className}">${score}</td>`;
+                            }).join('')}
+                            <td class="total">${inScore}</td>
+                            <td class="total">${totalScore}</td>
+                        </tr>
+                        <!-- To Par -->
+                        <tr class="to-par-row">
+                            <td>To Par</td>
+                            ${holes.slice(9, 18).map(hole => {
+                                const score = hole.score || '';
+                                const diff = score && hole.par ? score - hole.par : null;
+                                let className = '';
+                                let display = '';
+                                if (diff === 0) {
+                                    className = 'par';
+                                    display = 'E';
+                                } else if (diff) {
+                                    if (diff < 0) className = 'under-par';
+                                    else className = 'over-par';
+                                    display = diff > 0 ? `+${diff}` : diff;
+                                }
+                                return `<td class="${className}">${display}</td>`;
+                            }).join('')}
+                            <td class="total">${inScore - inPar === 0 ? 'E' : (inScore - inPar > 0 ? `+${inScore - inPar}` : (inScore - inPar))}</td>
+                            <td class="total">${totalScore - totalPar === 0 ? 'E' : (totalScore - totalPar > 0 ? `+${totalScore - totalPar}` : (totalScore - totalPar))}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             
             <!-- 颜色图例 -->
             <div class="scorecard-legend">
