@@ -220,9 +220,12 @@ function renderHoleDetail() {
                     <label>标准杆</label>
                     <input type="number" id="par-input" value="${hole.par}" min="3" max="5">
                 </div>
-                <div class="score-item">
+                <div class="score-item-with-diff">
                     <label>成绩</label>
-                    <input type="number" id="score-input" value="${hole.score || defaultScore || ''}" min="1">
+                    <div class="score-input-wrapper">
+                        <input type="number" id="score-input" value="${hole.score || defaultScore || ''}" min="1">
+                        <div class="score-diff" id="score-diff"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -335,18 +338,50 @@ function renderPuttCard(putt, index) {
     `;
 }
 
+function updateScoreDiff() {
+    const hole = app.data.holes[app.currentHole - 1];
+    const scoreInput = document.getElementById('score-input');
+    const parInput = document.getElementById('par-input');
+    const diffDisplay = document.getElementById('score-diff');
+    
+    if (!scoreInput || !parInput || !diffDisplay) return;
+    
+    const score = parseInt(scoreInput.value) || 0;
+    const par = parseInt(parInput.value) || 4;
+    const diff = score - par;
+    
+    // 清除之前的样式
+    diffDisplay.className = 'score-diff';
+    
+    if (diff === 0) {
+        diffDisplay.textContent = 'PAR';
+        diffDisplay.classList.add('par');
+    } else if (diff > 0) {
+        diffDisplay.textContent = `+${diff}`;
+        diffDisplay.classList.add('over-par');
+    } else {
+        diffDisplay.textContent = `${diff}`;
+        diffDisplay.classList.add('under-par');
+    }
+}
+
 function setupHoleInputs() {
     const hole = app.data.holes[app.currentHole - 1];
     
     document.getElementById('par-input').addEventListener('change', (e) => {
         hole.par = parseInt(e.target.value) || 4;
+        updateScoreDiff();
         updateStats();
     });
     
     document.getElementById('score-input').addEventListener('change', (e) => {
         hole.score = parseInt(e.target.value) || hole.par;
+        updateScoreDiff();
         updateStats();
     });
+    
+    // 初始化差值显示
+    updateScoreDiff();
     
     document.querySelectorAll('.shot-card').forEach((card, idx) => {
         card.querySelector('.shot-club').addEventListener('change', (e) => {
