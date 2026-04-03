@@ -599,7 +599,7 @@ function generateScorecard() {
                             else if (diff > 2) className = 'other';
                             return `<td class="${className}">${score}</td>`;
                         }).join('')}
-                        <td class="total">${outScore || ''}</td>
+                        <td class="total">${outScore}</td>
                         ${holes.slice(9, 18).map(hole => {
                             const score = hole.score || '';
                             const diff = score && hole.par ? score - hole.par : null;
@@ -612,8 +612,8 @@ function generateScorecard() {
                             else if (diff > 2) className = 'other';
                             return `<td class="${className}">${score}</td>`;
                         }).join('')}
-                        <td class="total">${inScore || ''}</td>
-                        <td class="total">${totalScore || ''}</td>
+                        <td class="total">${inScore}</td>
+                        <td class="total">${totalScore}</td>
                     </tr>
                     <!-- To Par -->
                     <tr class="to-par-row">
@@ -633,7 +633,7 @@ function generateScorecard() {
                             }
                             return `<td class="${className}">${display}</td>`;
                         }).join('')}
-                        <td class="total">${outScore - outPar === 0 ? 'E' : (outScore - outPar > 0 ? `+${outScore - outPar}` : (outScore - outPar || ''))}</td>
+                        <td class="total">${outScore - outPar === 0 ? 'E' : (outScore - outPar > 0 ? `+${outScore - outPar}` : (outScore - outPar))}</td>
                         ${holes.slice(9, 18).map(hole => {
                             const score = hole.score || '';
                             const diff = score && hole.par ? score - hole.par : null;
@@ -649,8 +649,8 @@ function generateScorecard() {
                             }
                             return `<td class="${className}">${display}</td>`;
                         }).join('')}
-                        <td class="total">${inScore - inPar === 0 ? 'E' : (inScore - inPar > 0 ? `+${inScore - inPar}` : (inScore - inPar || ''))}</td>
-                        <td class="total">${totalScore - totalPar === 0 ? 'E' : (totalScore - totalPar > 0 ? `+${totalScore - totalPar}` : (totalScore - totalPar || ''))}</td>
+                        <td class="total">${inScore - inPar === 0 ? 'E' : (inScore - inPar > 0 ? `+${inScore - inPar}` : (inScore - inPar))}</td>
+                        <td class="total">${totalScore - totalPar === 0 ? 'E' : (totalScore - totalPar > 0 ? `+${totalScore - totalPar}` : (totalScore - totalPar))}</td>
                     </tr>
                 </tbody>
             </table>
