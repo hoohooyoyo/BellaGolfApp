@@ -220,7 +220,7 @@ function renderHoleDetail() {
                     <label>标准杆</label>
                     <input type="number" id="par-input" value="${hole.par}" min="3" max="5">
                 </div>
-                <div class="score-item-with-diff">
+                <div class="score-item">
                     <label>成绩</label>
                     <div class="score-input-wrapper">
                         <input type="number" id="score-input" value="${hole.score || defaultScore || ''}" min="1">

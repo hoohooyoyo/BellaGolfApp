@@ -262,6 +262,7 @@ h2 {
     color: #666;
     font-size: 0.85rem;
     margin-bottom: 5px;
+    text-align: center;
 }
 
 .score-item input {
@@ -272,18 +273,6 @@ h2 {
     border: 2px solid #ddd;
     border-radius: 8px;
     font-weight: 600;
-}
-
-.score-item-with-diff {
-    text-align: center;
-}
-
-.score-item-with-diff label {
-    display: block;
-    color: #666;
-    font-size: 0.85rem;
-    margin-bottom: 5px;
-    text-align: center;
 }
 
 .score-input-wrapper {
