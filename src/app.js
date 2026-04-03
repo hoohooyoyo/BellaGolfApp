@@ -208,6 +208,9 @@ function renderHoleTabs() {
 function renderHoleDetail() {
     const hole = app.data.holes[app.currentHole - 1];
     const container = document.getElementById('hole-detail');
+    
+    // 计算默认成绩：挥杆数+推杆数
+    const defaultScore = hole.shots.length + hole.putts.length;
 
     container.innerHTML = `
         <div class="hole-header">
@@ -219,7 +222,7 @@ function renderHoleDetail() {
                 </div>
                 <div class="score-item">
                     <label>成绩</label>
-                    <input type="number" id="score-input" value="${hole.score || ''}" min="1">
+                    <input type="number" id="score-input" value="${hole.score || defaultScore || ''}" min="1">
                 </div>
             </div>
         </div>
@@ -391,24 +394,32 @@ function setupHoleInputs() {
 function addShot() {
     const hole = app.data.holes[app.currentHole - 1];
     hole.shots.push({ club: '56度', distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
+    // 更新成绩：挥杆数+推杆数
+    hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
 }
 
 function removeShot(index) {
     const hole = app.data.holes[app.currentHole - 1];
     hole.shots.splice(index, 1);
+    // 更新成绩：挥杆数+推杆数
+    hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
 }
 
 function addPutt() {
     const hole = app.data.holes[app.currentHole - 1];
     hole.putts.push({ distance: 0 });
+    // 更新成绩：挥杆数+推杆数
+    hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
 }
 
 function removePutt(index) {
     const hole = app.data.holes[app.currentHole - 1];
     hole.putts.splice(index, 1);
+    // 更新成绩：挥杆数+推杆数
+    hole.score = hole.shots.length + hole.putts.length;
     renderHoleDetail();
 }
 
