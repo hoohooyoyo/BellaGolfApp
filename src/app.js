@@ -35,141 +35,18 @@ function setupMatchInfoInputs() {
 }
 
 function initHolesData() {
-    // Golf 02 测试数据 - 使用实际击打距离（位置距离差值）
-    app.data.holes = [
-        { number: 1, par: 5, score: 5, shots: [
-            { club: '1号木', distance: 190, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '球道木', distance: 124, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 136, direction: '直球', lie: '沙坑', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 40, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 5 }
-        ]},
-        { number: 2, par: 3, score: 3, shots: [
-            { club: '7铁', distance: 116, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 14 },
-            { distance: 1 }
-        ]},
-        { number: 3, par: 3, score: 3, shots: [
-            { club: '7铁', distance: 136, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 18 },
-            { distance: 4 }
-        ]},
-        { number: 4, par: 4, score: 5, shots: [
-            { club: '1号木', distance: 185, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '球道木', distance: 165, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 20, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 12 },
-            { distance: 3 }
-        ]},
-        { number: 5, par: 4, score: 5, shots: [
-            { club: '1号木', distance: 194, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 147, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 13, direction: '直球', lie: '沙坑', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 36 },
-            { distance: 4 }
-        ]},
-        { number: 6, par: 4, score: 5, shots: [
-            { club: '1号木', distance: 170, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 145, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 35, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 21 },
-            { distance: 2 }
-        ]},
-        { number: 7, par: 3, score: 3, shots: [
-            { club: '7铁', distance: 151, direction: '偏右', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 48 },
-            { distance: 9 }
-        ]},
-        { number: 8, par: 4, score: 4, shots: [
-            { club: '1号木', distance: 169, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 151, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 21 },
-            { distance: 3 }
-        ]},
-        { number: 9, par: 5, score: 6, shots: [
-            { club: '1号木', distance: 197, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '球道木', distance: 197, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 93, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 39 },
-            { distance: 6 },
-            { distance: 1 }
-        ]},
-        { number: 10, par: 4, score: 4, shots: [
-            { club: '1号木', distance: 180, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '球道木', distance: 170, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 21 },
-            { distance: 2 }
-        ]},
-        { number: 11, par: 4, score: 5, shots: [
-            { club: '1号木', distance: 190, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 123, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 27, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 33 },
-            { distance: 4 }
-        ]},
-        { number: 12, par: 3, score: 4, shots: [
-            { club: '7铁', distance: 117, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 },
-            { club: '56度', distance: 19, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 9 },
-            { distance: 2 }
-        ]},
-        { number: 13, par: 4, score: 4, shots: [
-            { club: '1号木', distance: 178, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 104, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 16, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 1 }
-        ]},
-        { number: 14, par: 5, score: 5, shots: [
-            { club: '1号木', distance: 186, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '球道木', distance: 144, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 153, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 27 },
-            { distance: 4 }
-        ]},
-        { number: 15, par: 3, score: 3, shots: [
-            { club: '7铁', distance: 139, direction: '偏右', lie: '球道', attack: '直攻', penalty: 0 },
-            { club: '56度', distance: 17, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 2 }
-        ]},
-        { number: 16, par: 4, score: 4, shots: [
-            { club: '1号木', distance: 204, direction: '偏右', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 116, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '56度', distance: 10, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 5 }
-        ]},
-        { number: 17, par: 5, score: 5, shots: [
-            { club: '1号木', distance: 203, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '球道木', distance: 206, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 64, direction: '直球', lie: '球道', attack: '直攻', penalty: 0 }
-        ], putts: [
-            { distance: 18 },
-            { distance: 2 }
-        ]},
-        { number: 18, par: 4, score: 5, shots: [
-            { club: '1号木', distance: 237, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 },
-            { club: '7铁', distance: 83, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 }
-        ], putts: [
-            { distance: 39 },
-            { distance: 9 },
-            { distance: 1 }
-        ]}
-    ];
+    // 初始化18个洞的空白数据
+    app.data.holes = [];
+    for (let i = 1; i <= 18; i++) {
+        app.data.holes.push({
+            number: i,
+            par: 4, // 默认标准杆4
+            score: '',
+            shots: [],
+            putts: [],
+            note: ''
+        });
+    }
 }
 
 function setupNavigation() {
