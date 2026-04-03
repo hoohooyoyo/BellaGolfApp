@@ -346,7 +346,14 @@ function updateScoreDiff() {
     
     if (!scoreInput || !parInput || !diffDisplay) return;
     
-    const score = parseInt(scoreInput.value) || 0;
+    const scoreValue = scoreInput.value.trim();
+    if (!scoreValue) {
+        diffDisplay.textContent = '';
+        diffDisplay.className = 'score-diff';
+        return;
+    }
+    
+    const score = parseInt(scoreValue) || 0;
     const par = parseInt(parInput.value) || 4;
     const diff = score - par;
     

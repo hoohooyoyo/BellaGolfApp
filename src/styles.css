@@ -283,12 +283,14 @@ h2 {
     color: #666;
     font-size: 0.85rem;
     margin-bottom: 5px;
+    text-align: center;
 }
 
 .score-input-wrapper {
     display: flex;
     align-items: center;
     gap: 10px;
+    justify-content: center;
 }
 
 .score-input-wrapper input {
