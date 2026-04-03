@@ -953,25 +953,59 @@ function startVoiceRecognition(shotIndex) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'zh-CN';
-    recognition.interimResults = false;
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
     const hole = app.data.holes[app.currentHole - 1];
     const shot = hole.shots[shotIndex];
 
+    let finalTranscript = '';
+    let timeoutId = null;
+
     // 显示录音状态
     const voiceBtn = document.querySelector(`.shot-card[data-shot-index="${shotIndex}"] .voice-btn`);
     if (voiceBtn) {
-        voiceBtn.textContent = '🎤 录音中...';
+        voiceBtn.textContent = '⏹️ 停止';
         voiceBtn.style.background = '#e74c3c';
+        voiceBtn.onclick = () => {
+            recognition.stop();
+            if (finalTranscript) {
+                showVoiceConfirmDialog(finalTranscript, shotIndex);
+            }
+        };
     }
 
     recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        console.log('语音识别结果:', transcript);
+        let interimTranscript = '';
         
-        // 显示识别结果供用户确认
-        showVoiceConfirmDialog(transcript, shotIndex);
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+        
+        // 显示临时结果
+        if (voiceBtn) {
+            voiceBtn.textContent = `🎤 ${interimTranscript || finalTranscript || '录音中...'}`;
+        }
+        
+        // 清除之前的超时
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        
+        // 设置新的超时：2秒没有新的语音输入就结束
+        timeoutId = setTimeout(() => {
+            if (finalTranscript) {
+                console.log('语音识别结果:', finalTranscript);
+                showVoiceConfirmDialog(finalTranscript, shotIndex);
+                recognition.stop();
+            }
+        }, 2000);
         
         // 恢复按钮状态
         if (voiceBtn) {
