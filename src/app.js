@@ -583,22 +583,27 @@ function renderHoleDetail() {
         <div class="hole-header">
             <div class="hole-title">第 ${hole.number} 号洞</div>
             <div class="hole-score">
-                <div class="score-item" style="display: none;">
-                    <label>开球距离</label>
-                    <div class="drive-distance">${(hole.shots.length > 0 && hole.shots[0].club === '1号木' && hole.distance && hole.shots[0].distance && hole.distance - hole.shots[0].distance > 0) ? (hole.distance - hole.shots[0].distance) + ' yd' : '-'}</div>
+                <div class="score-row">
+                    <div class="score-item" style="display: none;">
+                        <label>开球距离</label>
+                        <div class="drive-distance">${(hole.shots.length > 0 && hole.shots[0].club === '1号木' && hole.distance && hole.shots[0].distance && hole.distance - hole.shots[0].distance > 0) ? (hole.distance - hole.shots[0].distance) + ' yd' : '-'}</div>
+                    </div>
+                    <div class="score-item">
+                        <label>距离</label>
+                        <input type="number" id="distance-input" value="${hole.distance || ''}" min="1">
+                    </div>
+                    <div class="score-item">
+                        <label>标准杆</label>
+                        <input type="number" id="par-input" value="${hole.par}" min="3" max="5">
+                    </div>
                 </div>
-                <div class="score-item">
-                    <label>距离</label>
-                    <input type="number" id="distance-input" value="${hole.distance || ''}" min="1">
-                </div>
-                <div class="score-item">
-                    <label>标准杆</label>
-                    <input type="number" id="par-input" value="${hole.par}" min="3" max="5">
-                </div>
-                <div class="score-item">
-                    <label>成绩</label>
-                    <div class="score-input-wrapper">
+                <div class="score-row">
+                    <div class="score-item">
+                        <label>成绩</label>
                         <input type="number" id="score-input" value="${hole.score || defaultScore || ''}" min="1">
+                    </div>
+                    <div class="score-item">
+                        <label>标准杆差</label>
                         <div class="score-diff" id="score-diff"></div>
                     </div>
                 </div>

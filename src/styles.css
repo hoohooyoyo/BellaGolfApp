@@ -266,6 +266,13 @@ h2 {
 
 .hole-score {
     display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.score-row {
+    display: flex;
     gap: 20px;
     align-items: flex-start;
 }
