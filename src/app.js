@@ -569,18 +569,21 @@ function updateScoreDiff() {
 function generateScorecard() {
     const holes = app.data.holes;
     
-    // 计算out和in的par和score
-    let outPar = 0, inPar = 0, outScore = 0, inScore = 0;
+    // 计算out和in的par、score和distance
+    let outPar = 0, inPar = 0, outScore = 0, inScore = 0, outDistance = 0, inDistance = 0;
     for (let i = 0; i < 9; i++) {
         outPar += holes[i].par;
         outScore += holes[i].score || 0;
+        outDistance += holes[i].distance || 0;
     }
     for (let i = 9; i < 18; i++) {
         inPar += holes[i].par;
         inScore += holes[i].score || 0;
+        inDistance += holes[i].distance || 0;
     }
     const totalPar = outPar + inPar;
     const totalScore = outScore + inScore;
+    const totalDistance = outDistance + inDistance;
     
     // 生成计分卡HTML
     let html = `
@@ -599,7 +602,7 @@ function generateScorecard() {
                         <tr class="tee-row">
                             <td>Tee</td>
                             ${holes.slice(0, 9).map(hole => `<td>${hole.distance || ''}</td>`).join('')}
-                            <td class="total"></td>
+                            <td class="total">${outDistance}</td>
                         </tr>
                         <!-- Par -->
                         <tr class="par-row">
@@ -663,8 +666,8 @@ function generateScorecard() {
                         <tr class="tee-row">
                             <td>Tee</td>
                             ${holes.slice(9, 18).map(hole => `<td>${hole.distance || ''}</td>`).join('')}
-                            <td class="total"></td>
-                            <td class="total"></td>
+                            <td class="total">${inDistance}</td>
+                            <td class="total">${totalDistance}</td>
                         </tr>
                         <!-- Par -->
                         <tr class="par-row">
