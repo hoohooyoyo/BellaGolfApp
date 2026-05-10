@@ -939,8 +939,21 @@ function generateScorecard() {
 function setupHoleInputs() {
     const hole = app.data.holes[app.currentHole - 1];
     
+    // 开球距离更新函数
+    function updateDriveDistanceDisplay() {
+        const driveDistanceDiv = document.querySelector('.drive-distance');
+        if (driveDistanceDiv) {
+            if (hole.shots.length > 0 && hole.shots[0].club === '1号木' && hole.distance && hole.shots[0].distance && (hole.distance - hole.shots[0].distance) > 0) {
+                driveDistanceDiv.textContent = (hole.distance - hole.shots[0].distance) + ' yd';
+            } else {
+                driveDistanceDiv.textContent = '-';
+            }
+        }
+    }
+    
     document.getElementById('distance-input').addEventListener('change', (e) => {
         hole.distance = parseInt(e.target.value) || '';
+        updateDriveDistanceDisplay();
         updateStats();
     });
     
@@ -960,14 +973,35 @@ function setupHoleInputs() {
     updateScoreDiff();
     
     document.querySelectorAll('.shot-card').forEach((card, idx) => {
-        card.querySelector('.shot-club').addEventListener('change', (e) => {
-            hole.shots[idx].club = e.target.value;
-            updateStats();
-        });
-        card.querySelector('.shot-distance').addEventListener('change', (e) => {
-            hole.shots[idx].distance = parseInt(e.target.value) || 0;
-            updateStats();
-        });
+        const clubSelect = card.querySelector('.shot-club');
+        const distanceInput = card.querySelector('.shot-distance');
+        
+        // 如果是第一杆，添加额外的事件监听器来更新开球距离
+        if (idx === 0) {
+            clubSelect.addEventListener('change', (e) => {
+                hole.shots[idx].club = e.target.value;
+                updateDriveDistanceDisplay();
+                updateStats();
+            });
+            
+            distanceInput.addEventListener('change', (e) => {
+                hole.shots[idx].distance = parseInt(e.target.value) || 0;
+                updateDriveDistanceDisplay();
+                updateStats();
+            });
+        } else {
+            // 其他杆的正常处理
+            clubSelect.addEventListener('change', (e) => {
+                hole.shots[idx].club = e.target.value;
+                updateStats();
+            });
+            
+            distanceInput.addEventListener('change', (e) => {
+                hole.shots[idx].distance = parseInt(e.target.value) || 0;
+                updateStats();
+            });
+        }
+        
         card.querySelector('.shot-direction').addEventListener('change', (e) => {
             hole.shots[idx].direction = e.target.value;
             updateStats();
