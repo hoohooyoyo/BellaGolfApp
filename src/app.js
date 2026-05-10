@@ -21,6 +21,17 @@ function initApp() {
     // 重置按钮事件
     document.getElementById('reset-btn').addEventListener('click', resetData);
     
+    // 数据导出按钮事件
+    document.getElementById('export-btn').addEventListener('click', exportData);
+    
+    // 数据导入按钮事件
+    document.getElementById('import-btn').addEventListener('click', () => {
+        document.getElementById('import-file').click();
+    });
+    
+    // 文件选择事件
+    document.getElementById('import-file').addEventListener('change', importData);
+    
     updateStats();
 }
 
@@ -79,17 +90,184 @@ function resetData() {
     updateStats();
 }
 
+function exportData() {
+    // 创建CSV内容
+    let csv = '球员,球场,日期\n';
+    csv += `${app.data.player || ''},${app.data.course || ''},${app.data.date || ''}\n\n`;
+    
+    csv += '洞号,距离,标准杆,成绩,备注\n';
+    app.data.holes.forEach(hole => {
+        csv += `${hole.number},${hole.distance || ''},${hole.par},${hole.score || ''},${escapeCSV(hole.note || '')}\n`;
+        
+        // 挥杆数据
+        hole.shots.forEach((shot, idx) => {
+            csv += `,挥杆${idx+1},${shot.club || ''},${shot.distance || ''},${shot.direction || ''},${shot.lie || ''},${shot.attack || ''},${shot.penalty || 0}\n`;
+        });
+        
+        // 推杆数据
+        hole.putts.forEach((putt, idx) => {
+            csv += `,推杆${idx+1},${putt.distance || ''}\n`;
+        });
+    });
+    
+    // 创建下载链接
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `golf_data_${app.data.date || new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const content = e.target.result;
+            parseCSV(content);
+            alert('数据导入成功！');
+            renderHoleDetail();
+            updateStats();
+        } catch (error) {
+            alert('数据导入失败：' + error.message);
+        }
+    };
+    reader.readAsText(file);
+    
+    // 重置文件输入
+    event.target.value = '';
+}
+
+function parseCSV(content) {
+    const lines = content.split('\n');
+    let lineIndex = 0;
+    
+    // 解析球员信息
+    if (lineIndex < lines.length) {
+        const header = lines[lineIndex++].trim();
+        if (header === '球员,球场,日期') {
+            const data = lines[lineIndex++].trim().split(',');
+            app.data.player = data[0] || '';
+            app.data.course = data[1] || '';
+            app.data.date = data[2] || '';
+        }
+    }
+    
+    // 跳过空行
+    while (lineIndex < lines.length && lines[lineIndex].trim() === '') {
+        lineIndex++;
+    }
+    
+    // 解析洞数据
+    if (lineIndex < lines.length) {
+        const header = lines[lineIndex++].trim();
+        if (header === '洞号,距离,标准杆,成绩,备注') {
+            app.data.holes = [];
+            let currentHole = null;
+            
+            while (lineIndex < lines.length) {
+                const line = lines[lineIndex++].trim();
+                if (line === '') continue;
+                
+                const parts = parseCSVLine(line);
+                
+                if (parts.length > 0 && !isNaN(parseInt(parts[0]))) {
+                    // 新洞数据
+                    if (currentHole) {
+                        app.data.holes.push(currentHole);
+                    }
+                    currentHole = {
+                        number: parseInt(parts[0]),
+                        distance: parts[1] ? parseInt(parts[1]) : '',
+                        par: parseInt(parts[2]),
+                        score: parts[3] ? parseInt(parts[3]) : '',
+                        shots: [],
+                        putts: [],
+                        note: parts[4] || ''
+                    };
+                } else if (parts.length > 1 && currentHole) {
+                    // 挥杆或推杆数据
+                    const type = parts[1];
+                    if (type && type.startsWith('挥杆')) {
+                        currentHole.shots.push({
+                            club: parts[2] || '',
+                            distance: parts[3] ? parseInt(parts[3]) : 0,
+                            direction: parts[4] || '',
+                            lie: parts[5] || '',
+                            attack: parts[6] || '',
+                            penalty: parts[7] ? parseInt(parts[7]) : 0
+                        });
+                    } else if (type && type.startsWith('推杆')) {
+                        currentHole.putts.push({
+                            distance: parts[2] ? parseInt(parts[2]) : 0
+                        });
+                    }
+                }
+            }
+            
+            if (currentHole) {
+                app.data.holes.push(currentHole);
+            }
+        }
+    }
+    
+    // 更新输入框
+    document.getElementById('player-input').value = app.data.player;
+    document.getElementById('course-input').value = app.data.course;
+    document.getElementById('date-input').value = app.data.date;
+}
+
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+            if (inQuotes && line[i+1] === '"') {
+                current += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current);
+    
+    return result;
+}
+
+function escapeCSV(text) {
+    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+        return '"' + text.replace(/"/g, '""') + '"';
+    }
+    return text;
+}
+
 function loadDemoData() {
     // 加载golf0611的击球数据作为演示数据
     app.data.holes = [
         { 
             number: 1, 
-            distance: 385, 
+            distance: 280, 
             par: 4, 
             score: 4, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -99,11 +277,11 @@ function loadDemoData() {
         },
         { 
             number: 2, 
-            distance: 155, 
+            distance: 115, 
             par: 3, 
             score: 3, 
             shots: [
-                { club: '7铁', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+                { club: '7铁', distance: 110, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
             ], 
             putts: [
                 { distance: 14 },
@@ -113,12 +291,12 @@ function loadDemoData() {
         },
         { 
             number: 3, 
-            distance: 410, 
+            distance: 295, 
             par: 4, 
             score: 5, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 15 },
@@ -129,13 +307,13 @@ function loadDemoData() {
         },
         { 
             number: 4, 
-            distance: 545, 
+            distance: 395, 
             par: 5, 
             score: 5, 
             shots: [
-                { club: '1号木', distance: 210, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '3号木', distance: 180, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
-                { club: '8铁', distance: 120, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 155, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '8铁', distance: 85, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -145,12 +323,12 @@ function loadDemoData() {
         },
         { 
             number: 5, 
-            distance: 365, 
+            distance: 265, 
             par: 4, 
             score: 3, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 5 }
@@ -159,12 +337,12 @@ function loadDemoData() {
         },
         { 
             number: 6, 
-            distance: 405, 
+            distance: 290, 
             par: 4, 
             score: 4, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -174,11 +352,11 @@ function loadDemoData() {
         },
         { 
             number: 7, 
-            distance: 175, 
+            distance: 130, 
             par: 3, 
             score: 2, 
             shots: [
-                { club: '8铁', distance: 140, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+                { club: '8铁', distance: 100, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
             ], 
             putts: [
                 { distance: 1 }
@@ -187,12 +365,12 @@ function loadDemoData() {
         },
         { 
             number: 8, 
-            distance: 420, 
+            distance: 300, 
             par: 4, 
             score: 4, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -202,13 +380,13 @@ function loadDemoData() {
         },
         { 
             number: 9, 
-            distance: 570, 
+            distance: 415, 
             par: 5, 
             score: 6, 
             shots: [
-                { club: '1号木', distance: 215, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '3号木', distance: 175, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
-                { club: '9铁', distance: 110, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 160, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 125, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '9铁', distance: 80, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 15 },
@@ -219,12 +397,12 @@ function loadDemoData() {
         },
         { 
             number: 10, 
-            distance: 395, 
+            distance: 285, 
             par: 4, 
             score: 4, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -234,11 +412,11 @@ function loadDemoData() {
         },
         { 
             number: 11, 
-            distance: 165, 
+            distance: 125, 
             par: 3, 
             score: 3, 
             shots: [
-                { club: '7铁', distance: 145, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+                { club: '7铁', distance: 105, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
             ], 
             putts: [
                 { distance: 8 },
@@ -248,12 +426,12 @@ function loadDemoData() {
         },
         { 
             number: 12, 
-            distance: 430, 
+            distance: 305, 
             par: 4, 
             score: 4, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -263,12 +441,12 @@ function loadDemoData() {
         },
         { 
             number: 13, 
-            distance: 375, 
+            distance: 275, 
             par: 4, 
             score: 3, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 5 }
@@ -277,13 +455,13 @@ function loadDemoData() {
         },
         { 
             number: 14, 
-            distance: 530, 
+            distance: 385, 
             par: 5, 
             score: 5, 
             shots: [
-                { club: '1号木', distance: 210, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '3号木', distance: 180, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
-                { club: '8铁', distance: 115, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 155, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '8铁', distance: 80, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -293,12 +471,12 @@ function loadDemoData() {
         },
         { 
             number: 15, 
-            distance: 445, 
+            distance: 320, 
             par: 4, 
             score: 4, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
@@ -308,11 +486,11 @@ function loadDemoData() {
         },
         { 
             number: 16, 
-            distance: 145, 
+            distance: 110, 
             par: 3, 
             score: 3, 
             shots: [
-                { club: '8铁', distance: 135, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
+                { club: '8铁', distance: 100, direction: '直球', lie: '球道', attack: '开球', penalty: 0 }
             ], 
             putts: [
                 { distance: 6 },
@@ -322,12 +500,12 @@ function loadDemoData() {
         },
         { 
             number: 17, 
-            distance: 400, 
+            distance: 290, 
             par: 4, 
             score: 5, 
             shots: [
-                { club: '1号木', distance: 200, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '7铁', distance: 130, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 150, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '7铁', distance: 95, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 15 },
@@ -338,13 +516,13 @@ function loadDemoData() {
         },
         { 
             number: 18, 
-            distance: 555, 
+            distance: 405, 
             par: 5, 
             score: 5, 
             shots: [
-                { club: '1号木', distance: 215, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
-                { club: '3号木', distance: 175, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
-                { club: '9铁', distance: 110, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
+                { club: '1号木', distance: 160, direction: '直球', lie: '球道', attack: '开球', penalty: 0 },
+                { club: '3号木', distance: 125, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 },
+                { club: '9铁', distance: 80, direction: '直球', lie: '球道', attack: '进攻', penalty: 0 }
             ], 
             putts: [
                 { distance: 10 },
