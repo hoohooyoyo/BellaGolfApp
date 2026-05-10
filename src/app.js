@@ -84,6 +84,7 @@ function loadDemoData() {
     app.data.holes = [
         { 
             number: 1, 
+            distance: 385, 
             par: 4, 
             score: 4, 
             shots: [
@@ -98,6 +99,7 @@ function loadDemoData() {
         },
         { 
             number: 2, 
+            distance: 155, 
             par: 3, 
             score: 3, 
             shots: [
@@ -111,6 +113,7 @@ function loadDemoData() {
         },
         { 
             number: 3, 
+            distance: 410, 
             par: 4, 
             score: 5, 
             shots: [
@@ -126,6 +129,7 @@ function loadDemoData() {
         },
         { 
             number: 4, 
+            distance: 545, 
             par: 5, 
             score: 5, 
             shots: [
@@ -141,6 +145,7 @@ function loadDemoData() {
         },
         { 
             number: 5, 
+            distance: 365, 
             par: 4, 
             score: 3, 
             shots: [
@@ -154,6 +159,7 @@ function loadDemoData() {
         },
         { 
             number: 6, 
+            distance: 405, 
             par: 4, 
             score: 4, 
             shots: [
@@ -168,6 +174,7 @@ function loadDemoData() {
         },
         { 
             number: 7, 
+            distance: 175, 
             par: 3, 
             score: 2, 
             shots: [
@@ -180,6 +187,7 @@ function loadDemoData() {
         },
         { 
             number: 8, 
+            distance: 420, 
             par: 4, 
             score: 4, 
             shots: [
@@ -194,6 +202,7 @@ function loadDemoData() {
         },
         { 
             number: 9, 
+            distance: 570, 
             par: 5, 
             score: 6, 
             shots: [
@@ -210,6 +219,7 @@ function loadDemoData() {
         },
         { 
             number: 10, 
+            distance: 395, 
             par: 4, 
             score: 4, 
             shots: [
@@ -224,6 +234,7 @@ function loadDemoData() {
         },
         { 
             number: 11, 
+            distance: 165, 
             par: 3, 
             score: 3, 
             shots: [
@@ -237,6 +248,7 @@ function loadDemoData() {
         },
         { 
             number: 12, 
+            distance: 430, 
             par: 4, 
             score: 4, 
             shots: [
@@ -251,6 +263,7 @@ function loadDemoData() {
         },
         { 
             number: 13, 
+            distance: 375, 
             par: 4, 
             score: 3, 
             shots: [
@@ -264,6 +277,7 @@ function loadDemoData() {
         },
         { 
             number: 14, 
+            distance: 530, 
             par: 5, 
             score: 5, 
             shots: [
@@ -279,6 +293,7 @@ function loadDemoData() {
         },
         { 
             number: 15, 
+            distance: 445, 
             par: 4, 
             score: 4, 
             shots: [
@@ -293,6 +308,7 @@ function loadDemoData() {
         },
         { 
             number: 16, 
+            distance: 145, 
             par: 3, 
             score: 3, 
             shots: [
@@ -306,6 +322,7 @@ function loadDemoData() {
         },
         { 
             number: 17, 
+            distance: 400, 
             par: 4, 
             score: 5, 
             shots: [
@@ -321,6 +338,7 @@ function loadDemoData() {
         },
         { 
             number: 18, 
+            distance: 555, 
             par: 5, 
             score: 5, 
             shots: [
