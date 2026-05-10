@@ -46,24 +46,24 @@ function initHolesData() {
     // 前九洞 (Out)：2 个 Par 3，5 个 Par 4，2 个 Par 5 → 36 杆
     // 后九洞 (In)：2 个 Par 3，5 个 Par 4，2 个 Par 5 → 36 杆
     app.data.holes = [
-        { number: 1, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 2, par: 3, score: '', shots: [], putts: [], note: '' },
-        { number: 3, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 4, par: 5, score: '', shots: [], putts: [], note: '' },
-        { number: 5, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 6, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 7, par: 3, score: '', shots: [], putts: [], note: '' },
-        { number: 8, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 9, par: 5, score: '', shots: [], putts: [], note: '' },
-        { number: 10, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 11, par: 3, score: '', shots: [], putts: [], note: '' },
-        { number: 12, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 13, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 14, par: 5, score: '', shots: [], putts: [], note: '' },
-        { number: 15, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 16, par: 3, score: '', shots: [], putts: [], note: '' },
-        { number: 17, par: 4, score: '', shots: [], putts: [], note: '' },
-        { number: 18, par: 5, score: '', shots: [], putts: [], note: '' }
+        { number: 1, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 2, distance: '', par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 3, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 4, distance: '', par: 5, score: '', shots: [], putts: [], note: '' },
+        { number: 5, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 6, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 7, distance: '', par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 8, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 9, distance: '', par: 5, score: '', shots: [], putts: [], note: '' },
+        { number: 10, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 11, distance: '', par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 12, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 13, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 14, distance: '', par: 5, score: '', shots: [], putts: [], note: '' },
+        { number: 15, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 16, distance: '', par: 3, score: '', shots: [], putts: [], note: '' },
+        { number: 17, distance: '', par: 4, score: '', shots: [], putts: [], note: '' },
+        { number: 18, distance: '', par: 5, score: '', shots: [], putts: [], note: '' }
     ];
 }
 
@@ -388,6 +388,10 @@ function renderHoleDetail() {
             <div class="hole-title">第 ${hole.number} 号洞</div>
             <div class="hole-score">
                 <div class="score-item">
+                    <label>距离</label>
+                    <input type="number" id="distance-input" value="${hole.distance || ''}" min="1">
+                </div>
+                <div class="score-item">
                     <label>标准杆</label>
                     <input type="number" id="par-input" value="${hole.par}" min="3" max="5">
                 </div>
@@ -573,6 +577,12 @@ function generateScorecard() {
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Tee -->
+                        <tr class="tee-row">
+                            <td>Tee</td>
+                            ${holes.slice(0, 9).map(hole => `<td>${hole.distance || ''}</td>`).join('')}
+                            <td class="total"></td>
+                        </tr>
                         <!-- Par -->
                         <tr class="par-row">
                             <td>Par</td>
@@ -631,6 +641,13 @@ function generateScorecard() {
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- Tee -->
+                        <tr class="tee-row">
+                            <td>Tee</td>
+                            ${holes.slice(9, 18).map(hole => `<td>${hole.distance || ''}</td>`).join('')}
+                            <td class="total"></td>
+                            <td class="total"></td>
+                        </tr>
                         <!-- Par -->
                         <tr class="par-row">
                             <td>Par</td>
@@ -718,6 +735,11 @@ function generateScorecard() {
 
 function setupHoleInputs() {
     const hole = app.data.holes[app.currentHole - 1];
+    
+    document.getElementById('distance-input').addEventListener('change', (e) => {
+        hole.distance = parseInt(e.target.value) || '';
+        updateStats();
+    });
     
     document.getElementById('par-input').addEventListener('change', (e) => {
         hole.par = parseInt(e.target.value) || 4;
@@ -1419,14 +1441,14 @@ function startVoiceRecognition(shotIndex) {
             clearTimeout(timeoutId);
         }
         
-        // 设置新的超时：2秒没有新的语音输入就结束
+        // 设置新的超时：5秒没有新的语音输入就结束
         timeoutId = setTimeout(() => {
             if (finalTranscript) {
                 console.log('语音识别结果:', finalTranscript);
                 showVoiceConfirmDialog(finalTranscript, shotIndex);
                 recognition.stop();
             }
-        }, 2000);
+        }, 5000);
         
         // 恢复按钮状态
         if (voiceBtn) {
