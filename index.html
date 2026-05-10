@@ -39,13 +39,22 @@
         <main>
             <section id="summary-section" class="tab-content active">
                 <div class="stats-container">
-                    <!-- 数据导入导出 -->
-                    <div class="stats-category">
-                        <h3 class="category-title">数据管理</h3>
-                        <div class="data-actions">
-                            <button id="export-btn" class="action-btn">📥 数据导出</button>
-                            <button id="import-btn" class="action-btn">📤 数据导入</button>
-                            <input type="file" id="import-file" accept=".csv" style="display: none;">
+                    <!-- 数据管理和统计分析并排显示 -->
+                    <div class="stats-row">
+                        <!-- 数据导入导出 -->
+                        <div class="stats-category" style="flex: 1;">
+                            <h3 class="category-title">数据管理</h3>
+                            <div class="data-actions">
+                                <button id="export-btn" class="action-btn">📥 数据导出</button>
+                                <button id="import-btn" class="action-btn">📤 数据导入</button>
+                                <input type="file" id="import-file" accept=".csv" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <!-- 统计分析 -->
+                        <div class="stats-category" style="flex: 2;">
+                            <h3 class="category-title">统计分析</h3>
+                            <div class="stats-grid" id="stats-overview"></div>
                         </div>
                     </div>
                     
@@ -54,12 +63,6 @@
                    <h3 class="category-title">计分卡</h3>
                    <div class="scorecard-container" id="stats-scorecard"></div>
                </div>
-                    
-                    <!-- 统计分析 -->
-                    <div class="stats-category">
-                        <h3 class="category-title">统计分析</h3>
-                        <div class="stats-grid" id="stats-overview"></div>
-                    </div>
                     
                     <!-- 开球 -->
                     <div class="stats-category">
