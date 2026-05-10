@@ -583,7 +583,7 @@ function renderHoleDetail() {
         <div class="hole-header">
             <div class="hole-title">第 ${hole.number} 号洞</div>
             <div class="hole-score">
-                <div class="score-item">
+                <div class="score-item" style="display: none;">
                     <label>开球距离</label>
                     <div class="drive-distance">${(hole.shots.length > 0 && hole.shots[0].club === '1号木' && hole.distance && hole.shots[0].distance && hole.distance - hole.shots[0].distance > 0) ? (hole.distance - hole.shots[0].distance) + ' yd' : '-'}</div>
                 </div>
