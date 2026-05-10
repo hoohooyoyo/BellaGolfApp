@@ -584,6 +584,10 @@ function renderHoleDetail() {
             <div class="hole-title">第 ${hole.number} 号洞</div>
             <div class="hole-score">
                 <div class="score-item">
+                    <label>开球距离</label>
+                    <div class="drive-distance">${(hole.shots.length > 0 && hole.shots[0].club === '1号木' && hole.distance && hole.shots[0].distance && hole.distance - hole.shots[0].distance > 0) ? (hole.distance - hole.shots[0].distance) + ' yd' : '-'}</div>
+                </div>
+                <div class="score-item">
                     <label>距离</label>
                     <input type="number" id="distance-input" value="${hole.distance || ''}" min="1">
                 </div>
@@ -1462,11 +1466,15 @@ function calculateStats() {
             const shot = hole.shots[idx];
             holePenalties += shot.penalty || 0;
             
-            // 开球统计
-            if (idx === 0 && ['1号木', '3号木', '5号木'].includes(shot.club)) {
+            // 开球统计（只有第1杆使用1号木才统计）
+            if (idx === 0 && shot.club === '1号木') {
                 driveCount++;
-                if (shot.distance) {
-                    driveDistances.push(shot.distance);
+                // 开球距离 = 当前球洞距离 - 第1杆后的距离（即第1杆的实际击球距离）
+                if (hole.distance && shot.distance) {
+                    const driveDistance = hole.distance - shot.distance;
+                    if (driveDistance > 0) {
+                        driveDistances.push(driveDistance);
+                    }
                 }
                 
                 if (shot.lie === '球道') fairwayCount++;
