@@ -643,14 +643,17 @@ function renderShotCard(shot, index) {
                     <select class="shot-club">
                         <option value="1号木" ${shot.club === '1号木' ? 'selected' : ''}>1号木</option>
                         <option value="3号木" ${shot.club === '3号木' ? 'selected' : ''}>3号木</option>
-                        <option value="球道木" ${shot.club === '球道木' ? 'selected' : ''}>球道木</option>
+                        <option value="3号球道木" ${shot.club === '3号球道木' ? 'selected' : ''}>3号球道木</option>
+                        <option value="4号球道木" ${shot.club === '4号球道木' ? 'selected' : ''}>4号球道木</option>
                         <option value="6铁" ${shot.club === '6铁' ? 'selected' : ''}>6铁</option>
                         <option value="7铁" ${shot.club === '7铁' ? 'selected' : ''}>7铁</option>
                         <option value="8铁" ${shot.club === '8铁' ? 'selected' : ''}>8铁</option>
                         <option value="9铁" ${shot.club === '9铁' ? 'selected' : ''}>9铁</option>
                         <option value="P杆" ${shot.club === 'P杆' ? 'selected' : ''}>P杆</option>
-                        <option value="52度" ${shot.club === '52度' ? 'selected' : ''}>52度</option>
-                        <option value="56度" ${shot.club === '56度' ? 'selected' : ''}>56度</option>
+                        <option value="S杆" ${shot.club === 'S杆' ? 'selected' : ''}>S杆</option>
+                        <option value="A杆" ${shot.club === 'A杆' ? 'selected' : ''}>A杆</option>
+                        <option value="54度" ${shot.club === '54度' ? 'selected' : ''}>54度</option>
+                        <option value="58度" ${shot.club === '58度' ? 'selected' : ''}>58度</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -1051,7 +1054,7 @@ function addShot() {
         }
     } else if (shotCount === 1 && hole.par === 3) {
         // 标准杆3杆时的第二杆
-        defaultClub = '56度'; // 第二杆默认56度切杆
+        defaultClub = '54度'; // 第二杆默认54度切杆
     }
     
     hole.shots.push({ club: defaultClub, distance: 0, direction: '直球', lie: '球道', attack: '过渡', penalty: 0 });
