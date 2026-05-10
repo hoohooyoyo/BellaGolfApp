@@ -640,7 +640,7 @@ function renderShotCard(shot, index) {
         <div class="shot-card" data-shot-index="${index}">
             <h4>第 ${index + 1} 杆
                 <button class="remove-btn" onclick="removeShot(${index})")">删除</button>
-                <button class="voice-btn" onclick="startVoiceRecognition(${index})")">🎤 语音</button>
+                <button class="voice-btn" onmousedown="startVoiceRecognition(${index})" onmouseup="stopVoiceRecognition()" onmouseleave="stopVoiceRecognition()" ontouchstart="startVoiceRecognition(${index})" ontouchend="stopVoiceRecognition()">🎤 按住说话</button>
             </h4>
             <div class="input-row">
                 <div class="input-group">
@@ -1636,81 +1636,60 @@ function calculateStats() {
 }
 
 // 语音识别功能
+let currentRecognition = null;
+let currentShotIndex = null;
+let currentFinalTranscript = '';
+
 function startVoiceRecognition(shotIndex) {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert('您的浏览器不支持语音识别功能，请使用Chrome或Edge浏览器');
         return;
     }
 
+    // 如果正在录音，先停止
+    if (currentRecognition) {
+        stopVoiceRecognition();
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'zh-CN';
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
+    currentRecognition = new SpeechRecognition();
+    currentShotIndex = shotIndex;
+    currentFinalTranscript = '';
 
-    const hole = app.data.holes[app.currentHole - 1];
-    const shot = hole.shots[shotIndex];
-
-    let finalTranscript = '';
-    let timeoutId = null;
+    currentRecognition.lang = 'zh-CN';
+    currentRecognition.continuous = true;
+    currentRecognition.interimResults = true;
+    currentRecognition.maxAlternatives = 1;
 
     // 显示录音状态
     const voiceBtn = document.querySelector(`.shot-card[data-shot-index="${shotIndex}"] .voice-btn`);
     if (voiceBtn) {
-        voiceBtn.textContent = '⏹️ 停止';
+        voiceBtn.textContent = '🔴 录音中';
         voiceBtn.style.background = '#e74c3c';
-        voiceBtn.onclick = () => {
-            recognition.stop();
-            if (finalTranscript) {
-                showVoiceConfirmDialog(finalTranscript, shotIndex);
-            }
-        };
+        voiceBtn.style.transform = 'scale(1.1)';
     }
 
-    recognition.onresult = function(event) {
-        let interimTranscript = '';
-        
+    currentRecognition.onresult = function(event) {
         for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcript = event.results[i][0].transcript;
             if (event.results[i].isFinal) {
-                finalTranscript += transcript;
-            } else {
-                interimTranscript += transcript;
+                currentFinalTranscript += transcript;
             }
         }
         
         // 显示临时结果
         if (voiceBtn) {
-            voiceBtn.textContent = `🎤 ${interimTranscript || finalTranscript || '录音中...'}`;
-        }
-        
-        // 清除之前的超时
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
-        
-        // 设置新的超时：5秒没有新的语音输入就结束
-        timeoutId = setTimeout(() => {
-            if (finalTranscript) {
-                console.log('语音识别结果:', finalTranscript);
-                showVoiceConfirmDialog(finalTranscript, shotIndex);
-                recognition.stop();
-            }
-        }, 5000);
-        
-        // 恢复按钮状态
-        if (voiceBtn) {
-            voiceBtn.textContent = '🎤 语音';
-            voiceBtn.style.background = '';
+            voiceBtn.textContent = `🔴 ${currentFinalTranscript || '录音中...'}`;
         }
     };
 
-    recognition.onerror = function(event) {
+    currentRecognition.onerror = function(event) {
         console.error('语音识别错误:', event.error);
+        const voiceBtn = document.querySelector(`.shot-card[data-shot-index="${currentShotIndex}"] .voice-btn`);
         if (voiceBtn) {
-            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.textContent = '🎤 按住说话';
             voiceBtn.style.background = '';
+            voiceBtn.style.transform = 'scale(1)';
         }
         
         let errorMsg = '语音识别失败';
@@ -1726,7 +1705,7 @@ function startVoiceRecognition(shotIndex) {
                 break;
             case 'network':
                 // 网络错误时，显示手动输入对话框
-                showManualVoiceInputDialog(shotIndex);
+                showManualVoiceInputDialog(currentShotIndex);
                 return;
             case 'aborted':
                 errorMsg = '语音识别已取消';
@@ -1737,22 +1716,47 @@ function startVoiceRecognition(shotIndex) {
         alert(errorMsg);
     };
 
-    recognition.onend = function() {
+    currentRecognition.onend = function() {
+        const voiceBtn = document.querySelector(`.shot-card[data-shot-index="${currentShotIndex}"] .voice-btn`);
         if (voiceBtn) {
-            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.textContent = '🎤 按住说话';
             voiceBtn.style.background = '';
+            voiceBtn.style.transform = 'scale(1)';
         }
+        currentRecognition = null;
     };
 
     try {
-        recognition.start();
+        currentRecognition.start();
     } catch (e) {
         console.error('启动语音识别失败:', e);
+        const voiceBtn = document.querySelector(`.shot-card[data-shot-index="${currentShotIndex}"] .voice-btn`);
         if (voiceBtn) {
-            voiceBtn.textContent = '🎤 语音';
+            voiceBtn.textContent = '🎤 按住说话';
             voiceBtn.style.background = '';
+            voiceBtn.style.transform = 'scale(1)';
         }
-        showManualVoiceInputDialog(shotIndex);
+        showManualVoiceInputDialog(currentShotIndex);
+    }
+}
+
+function stopVoiceRecognition() {
+    if (currentRecognition) {
+        currentRecognition.stop();
+        
+        // 延迟一下让识别完成
+        setTimeout(() => {
+            if (currentFinalTranscript.trim()) {
+                console.log('语音识别结果:', currentFinalTranscript);
+                showVoiceConfirmDialog(currentFinalTranscript, currentShotIndex);
+            } else {
+                console.log('没有检测到语音输入');
+            }
+            // 重置状态
+            currentRecognition = null;
+            currentShotIndex = null;
+            currentFinalTranscript = '';
+        }, 500);
     }
 }
 
